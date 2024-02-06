@@ -1,7 +1,13 @@
 {
-
-    module Parser (parse, Token (..)) where
-
+module Parser (
+      parse,
+      Token (..),
+      Expr (..),
+      TypeDef (..),
+      LowTerm (..),
+      HighTerm (..),
+      Factor (..)
+) where
 }
 
 %name parse
@@ -14,6 +20,7 @@
       in              { TokenIn }
       int             { TokenInt $$ }
       literal         { TokenLiteral $$ }
+      bool            { TokenBool $$ }
       '"'             { TokenQuote }
       '='             { TokenEq }
       '+'             { TokenPlus }
@@ -27,26 +34,26 @@
 %%
 
 Expr     : let literal ':' literal '=' Expr in Expr { Let $2 $4 $6 $8 }
-         | TypeDef                   { TypeDef $1 }
+         | TypeDef                                  { TypeDef $1 }
 
-TypeDef  : type literal '=' literal in Expr { Type $2 $4 $6 }
-         | LowTerm                   { LowTerm $1 }
+TypeDef  : type literal '=' literal in Expr         { Type $2 $4 $6 }
+         | LowTerm                                  { LowTerm $1 }
 
-LowTerm  : LowTerm '+' HighTerm      { Plus $1 $3 }
-         | LowTerm '-' HighTerm      { Minus $1 $3 }
-         | HighTerm                  { HighTerm $1 }
+LowTerm  : LowTerm '+' HighTerm                     { Plus $1 $3 }
+         | LowTerm '-' HighTerm                     { Minus $1 $3 }
+         | HighTerm                                 { HighTerm $1 }
 
-HighTerm : HighTerm '*' Factor       { Times $1 $3 }
-         | HighTerm '/' Factor       { Div $1 $3 }
-         | Factor                    { Factor $1 }
+HighTerm : HighTerm '*' Factor                      { Times $1 $3 }
+         | HighTerm '/' Factor                      { Div $1 $3 }
+         | Factor                                   { Factor $1 }
 
-Factor   : '"' literal '"'           { String $2 }
-         | literal                   { Name $1 }
-         | int                       { Int $1 }
-         | '(' Expr ')'              { Brack $2 }
+Factor   : '"' literal '"'                          { String $2 }
+         | literal                                  { Name $1 }
+         | int                                      { Int $1 }
+         | bool                                     { Bool $1 }
+         | '(' Expr ')'                             { Brack $2 }
 
 {
-
 parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
@@ -76,6 +83,7 @@ data Factor
       = String String
       | Int Int
       | Name String
+      | Bool Bool
       | Brack Expr
       deriving Show
 
@@ -85,6 +93,7 @@ data Token
       | TokenIn
       | TokenInt Int
       | TokenLiteral String
+      | TokenBool Bool
       | TokenQuote
       | TokenEq
       | TokenPlus
@@ -95,5 +104,4 @@ data Token
       | TokenCB
       | TokenColon
       deriving Show
-
 }
