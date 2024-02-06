@@ -11,6 +11,7 @@ lexer ('T':'r':'u':'e':cs) = TokenBool True : lexer cs
 lexer ('F':'a':'l':'s':'e':cs) = TokenBool False : lexer cs
 lexer (':':cs) = TokenColon : lexer cs
 lexer ('"':cs) = TokenQuote : lexer cs
+lexer ('=':'>':cs) = TokenFatArrow : lexer cs
 lexer ('=':cs) = TokenEq : lexer cs
 lexer ('+':cs) = TokenPlus : lexer cs
 lexer ('-':cs) = TokenMinus : lexer cs
