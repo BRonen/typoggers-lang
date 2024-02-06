@@ -3,6 +3,8 @@ module Checker (typeCheck) where
 import Parser (
     Expr (..),
     TypeDef (..),
+    FuncDef (..),
+    FuncApp (..),
     LowTerm (..),
     HighTerm (..),
     Factor (..)
@@ -20,12 +22,28 @@ typeCheck (Let name vartype value next) = do
     pure $ Let name vartype value' next'
 
 typeCheckTypeDef :: TypeDef -> Either String TypeDef
-typeCheckTypeDef (LowTerm lowterm) = do
-    lowterm' <- typeCheckLowTerm lowterm
-    pure $ LowTerm lowterm'
+typeCheckTypeDef (FuncDef funcdef) = do
+    funcdef' <- typeCheckFuncDef funcdef
+    pure $ FuncDef funcdef'
 typeCheckTypeDef (Type name value next) = do
     next' <- typeCheck next
     pure $ Type name value next'
+
+typeCheckFuncDef :: FuncDef -> Either String FuncDef
+typeCheckFuncDef (FuncApp funcapp) = do
+    funcapp' <- typeCheckFuncApp funcapp
+    pure $ FuncApp funcapp'
+typeCheckFuncDef (Def param paramT retT body) = do
+    body' <- typeCheck body
+    pure $ Def param paramT retT body'
+
+typeCheckFuncApp :: FuncApp -> Either String FuncApp
+typeCheckFuncApp (LowTerm lowterm) = do
+    lowterm' <- typeCheckLowTerm lowterm
+    pure $ LowTerm lowterm'
+typeCheckFuncApp (App name param) = do
+    param' <- typeCheck param
+    pure $ App name param'
 
 typeCheckLowTerm :: LowTerm -> Either String LowTerm
 typeCheckLowTerm (HighTerm highterm) = do
