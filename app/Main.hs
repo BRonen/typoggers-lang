@@ -6,7 +6,8 @@ import Checker (typeCheck)
 
 main :: IO ()
 main = do
-    let ast = parse $ (lexer "let a: A = 2 + 2 in 2 - 1")
+    let tokens = lexer "let a: Function = (x: Int): Int => x + 2 in a 2 - 1"
+    let ast = parse tokens
     case typeCheck ast of
         Right ast' -> print ast'
         Left err -> do
