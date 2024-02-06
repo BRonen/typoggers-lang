@@ -10,9 +10,11 @@
 
 %token
       let             { TokenLet }
+      type            { TokenType }
       in              { TokenIn }
       int             { TokenInt $$ }
-      name            { TokenName $$ }
+      literal         { TokenLiteral $$ }
+      '"'             { TokenQuote }
       '='             { TokenEq }
       '+'             { TokenPlus }
       '-'             { TokenMinus }
@@ -20,31 +22,41 @@
       '/'             { TokenDiv }
       '('             { TokenOB }
       ')'             { TokenCB }
+      ':'             { TokenColon }
 
 %%
 
-Exp      : let name '=' Exp in Exp  { Let $2 $4 $6 }
-         | LowTerm                 { LowTerm $1 }
+Expr     : let literal ':' literal '=' Expr in Expr { Let $2 $4 $6 $8 }
+         | TypeDef                   { TypeDef $1 }
 
-LowTerm  : LowTerm '+' HighTerm    { Plus $1 $3 }
-         | LowTerm '-' HighTerm    { Minus $1 $3 }
-         | HighTerm                { HighTerm $1 }
+TypeDef  : type literal '=' literal in Expr { Type $2 $4 $6 }
+         | LowTerm                   { LowTerm $1 }
 
-HighTerm : HighTerm '*' Factor     { Times $1 $3 }
-         | HighTerm '/' Factor     { Div $1 $3 }
-         | Factor                  { Factor $1 }
+LowTerm  : LowTerm '+' HighTerm      { Plus $1 $3 }
+         | LowTerm '-' HighTerm      { Minus $1 $3 }
+         | HighTerm                  { HighTerm $1 }
 
-Factor   : int                     { Int $1 }
-         | name                    { Name $1 }
-         | '(' Exp ')'             { Brack $2 }
+HighTerm : HighTerm '*' Factor       { Times $1 $3 }
+         | HighTerm '/' Factor       { Div $1 $3 }
+         | Factor                    { Factor $1 }
+
+Factor   : '"' literal '"'           { String $2 }
+         | literal                   { Name $1 }
+         | int                       { Int $1 }
+         | '(' Expr ')'              { Brack $2 }
 
 {
 
 parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
-data Exp
-      = Let String Exp Exp
+data Expr
+      = Let String String Expr Expr
+      | TypeDef TypeDef
+      deriving Show
+
+data TypeDef
+      = Type String String Expr
       | LowTerm LowTerm
       deriving Show
 
@@ -61,16 +73,19 @@ data HighTerm
       deriving Show
 
 data Factor
-      = Int Int
+      = String String
+      | Int Int
       | Name String
-      | Brack Exp
+      | Brack Expr
       deriving Show
 
 data Token
       = TokenLet
+      | TokenType
       | TokenIn
       | TokenInt Int
-      | TokenName String
+      | TokenLiteral String
+      | TokenQuote
       | TokenEq
       | TokenPlus
       | TokenMinus
@@ -78,6 +93,7 @@ data Token
       | TokenDiv
       | TokenOB
       | TokenCB
- deriving Show
+      | TokenColon
+      deriving Show
 
 }
