@@ -6,31 +6,29 @@ Grammar:
 
 ```rust
 <Expr> ::= "let " <Name>+ ": " <CapitalName> " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
-<TypeDef> ::= "type " <CapitalName> " = " <Type> " in" <BreakLine> <Expr> | <LowTerm>
-<Type> ::= "typeof " <Name> | <CapitalName> | <HighTerm>
+<TypeDef> ::= "type " <CapitalName> " = " ("typeof " <Name> | <CapitalName>) " in" <BreakLine> <Expr> | <LowTerm>
 <LowTerm> ::= <LowTerm> (" + " | " - ") <HighTerm> | <HighTerm>
 <HighTerm> ::= <HighTerm> (" * " | " / ") <Factor> | <Factor>
-<Factor> ::= <String> | <Name>
+<Factor> ::= "\"" <Name> "\"" | [0-9]+ | "(" <Expr> ")" | <Name>
 <Name> ::= [a-z]+ [0-9]* | <CapitalName>
 <CapitalName> ::= [A-Z]+ [0-9]* <Name>*
-<String> ::= "\"" <Name> "\"" | <Int>
-<Int> ::= [0-9]+
-<BreakLine> ::= (" "*) ("\n"*)
+<BreakLine> ::= (" "*) ("\n"*))
 ```
+
+You can check the grammar [here](https://bnfplayground.pauliankline.com/)
 
 Examples:
 
 ```rust
 // Comments
-
 let foo: Int = 2 in
 let bar: Int = 3 in
-print (foo + bar)
+foo + (let baz: Int = 2 in baz + bar)
 ```
 
 ```rust
 type Baz = Int in
-let foo: Baz = 2 in
+let foo: Baz = 2 in // Comments
 let bar: Baz = 3 in
-print (foo + bar) // Comments
+foo + bar
 ```
