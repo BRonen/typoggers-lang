@@ -8,13 +8,14 @@ module Parser (
       FuncApp (..),
       LowTerm (..),
       HighTerm (..),
-      Factor (..)
+      Factor (..),
+      TypeNote (..)
 ) where
 }
 
 %name parse
-%tokentype { Token }
-%error { parseError }
+%tokentype  { Token }
+%error      { parseError }
 
 %token
       let             { TokenLet }
@@ -24,6 +25,7 @@ module Parser (
       literal         { TokenLiteral $$ }
       bool            { TokenBool $$ }
       fatarrow        { TokenFatArrow }
+      arrow           { TokenArrow }
       '"'             { TokenQuote }
       '='             { TokenEq }
       '+'             { TokenPlus }
@@ -36,52 +38,55 @@ module Parser (
 
 %%
 
-Expr     : let literal ':' literal '=' Expr in Expr              { Let $2 $4 $6 $8 }
-         | let literal '=' Expr in Expr                          { LetInfer $2 $4 $6 }
-         | TypeDef                                               { TypeDef $1 }
+Expr     : let literal ':' TypeNote '=' Expr in Expr               { Let $2 $4 $6 $8 }
+         | let literal '=' Expr in Expr                            { LetInfer $2 $4 $6 }
+         | TypeDef                                                 { TypeDef $1 }
 
-TypeDef  : type literal '=' literal in Expr                      { Type $2 $4 $6 }
-         | FuncDef                                               { FuncDef $1 }
+TypeDef  : type literal '=' TypeNote in Expr                       { TypeAlias $2 $4 $6 }
+         | FuncDef                                                 { FuncDef $1 }
 
-FuncDef  : '(' literal ':' literal ')' ':' literal fatarrow Expr { Def $2 $4 $7 $9 }
-         | '(' literal ':' literal ')' fatarrow Expr             { DefInfer $2 $4 $7 }
-         | FuncApp                                               { FuncApp $1 }
+FuncDef  : '(' literal ':' TypeNote ')' ':' TypeNote fatarrow Expr { Def $2 $4 $7 $9 }
+         | '(' literal ':' TypeNote ')' fatarrow Expr              { DefInfer $2 $4 $7 }
+         | FuncApp                                                 { FuncApp $1 }
 
-FuncApp  : literal Expr                                          { App $1 $2 }
-         | LowTerm                                               { LowTerm $1 }
+FuncApp  : literal Expr                                            { App $1 $2 }
+         | LowTerm                                                 { LowTerm $1 }
 
-LowTerm  : LowTerm '+' HighTerm                                  { Plus $1 $3 }
-         | LowTerm '-' HighTerm                                  { Minus $1 $3 }
-         | HighTerm                                              { HighTerm $1 }
+LowTerm  : LowTerm '+' HighTerm                                    { Plus $1 $3 }
+         | LowTerm '-' HighTerm                                    { Minus $1 $3 }
+         | HighTerm                                                { HighTerm $1 }
 
-HighTerm : HighTerm '*' Factor                                   { Times $1 $3 }
-         | HighTerm '/' Factor                                   { Div $1 $3 }
-         | Factor                                                { Factor $1 }
+HighTerm : HighTerm '*' Factor                                     { Times $1 $3 }
+         | HighTerm '/' Factor                                     { Div $1 $3 }
+         | Factor                                                  { Factor $1 }
 
-Factor   : '"' literal '"'                                       { String $2 }
-         | literal                                               { Name $1 }
-         | int                                                   { Int $1 }
-         | bool                                                  { Bool $1 }
-         | '(' Expr ')'                                          { Brack $2 }
+Factor   : '"' literal '"'                                         { String $2 }
+         | literal                                                 { Name $1 }
+         | int                                                     { Int $1 }
+         | bool                                                    { Bool $1 }
+         | '(' Expr ')'                                            { Brack $2 }
+
+TypeNote : literal                                                 { Type $1 }
+         | TypeNote arrow literal                                  { TypeFunc $3 $1 }
 
 {
 parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
 data Expr
-      = Let String String Expr Expr
+      = Let String TypeNote Expr Expr
       | LetInfer String Expr Expr
       | TypeDef TypeDef
       deriving Show
 
 data TypeDef
-      = Type String String Expr
+      = TypeAlias String TypeNote Expr
       | FuncDef FuncDef
       deriving Show
 
 data FuncDef
-      = Def String String String Expr
-      | DefInfer String String Expr
+      = Def String TypeNote TypeNote Expr
+      | DefInfer String TypeNote Expr
       | FuncApp FuncApp
       deriving Show
 
@@ -110,6 +115,11 @@ data Factor
       | Brack Expr
       deriving Show
 
+data TypeNote
+      = Type String
+      | TypeFunc String TypeNote
+      deriving Show
+
 data Token
       = TokenLet
       | TokenType
@@ -119,6 +129,7 @@ data Token
       | TokenBool Bool
       | TokenQuote
       | TokenFatArrow
+      | TokenArrow
       | TokenEq
       | TokenPlus
       | TokenMinus

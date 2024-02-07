@@ -8,7 +8,8 @@ import Parser (
     FuncApp (..),
     LowTerm (..),
     HighTerm (..),
-    Factor (..)
+    Factor (..),
+    TypeNote (..)
     )
 
 data TypeValue
@@ -30,34 +31,28 @@ typeCheck ctx (LetInfer name value next) = do
     value' <- typeCheck ctx value
     let ctx' = Map.insert name value' ctx
     typeCheck ctx' next
-typeCheck ctx (Let name "Function" value next) = do
+typeCheck ctx (Let name t value next) = do
+    let t' = typeCheckTypeNote t
+    let ctx' = Map.insert name t' ctx
     value' <- typeCheck ctx value
-    let ctx' = Map.insert name value' ctx
-    case value' of
-        TFunction _ _ -> typeCheck ctx' next
-        _ -> Left $ "Var<" ++ name ++ "> of type <Function> trying to be assigned with <" ++ show value' ++ ">"
-typeCheck ctx (Let name vartype value next) = do
-    let varT = mapStringToTypeValue vartype
-    let ctx' = Map.insert name varT ctx
-    value' <- typeCheck ctx value
-    if value' == varT
+    if value' == t'
         then typeCheck ctx' next
-        else Left $ "Var<" ++ name ++ "> of type <" ++ show varT ++ "> trying to be assigned with <" ++ show value' ++ ">"
+        else Left $ "Var<" ++ name ++ "> of type <" ++ show t' ++ "> trying to be assigned with <" ++ show value' ++ ">"
 
 typeCheckTypeDef :: Context -> TypeDef -> Either String TypeValue
 typeCheckTypeDef ctx (FuncDef funcdef) = typeCheckFuncDef ctx funcdef
-typeCheckTypeDef ctx (Type _ _ next) = typeCheck ctx next -- TODO: type aliases [TType]
+typeCheckTypeDef ctx (TypeAlias _ _ next) = typeCheck ctx next -- TODO: type aliases [TType]
 
 typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
 typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
 typeCheckFuncDef ctx (DefInfer param paramT body) = do
-    let paramT' = mapStringToTypeValue paramT
+    let paramT' = typeCheckTypeNote paramT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     pure $ TFunction paramT' bodyT
 typeCheckFuncDef ctx (Def param paramT retT body) = do
-    let paramT' = mapStringToTypeValue paramT
-    let retT' = mapStringToTypeValue retT
+    let paramT' = typeCheckTypeNote paramT
+    let retT' = typeCheckTypeNote retT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     if bodyT == retT'
@@ -123,8 +118,9 @@ typeCheckFactor _ (Int _) = Right TInt
 typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
-mapStringToTypeValue :: String -> TypeValue
-mapStringToTypeValue "String" = TString
-mapStringToTypeValue "Int" = TInt
-mapStringToTypeValue "Bool" = TBool
-mapStringToTypeValue s = error $ "Invalid string yet: " ++ s
+typeCheckTypeNote :: TypeNote -> TypeValue
+typeCheckTypeNote (Type "Int") = TInt
+typeCheckTypeNote (Type "String") = TString
+typeCheckTypeNote (Type "Bool") = TBool
+typeCheckTypeNote (Type _) = error "Not implemented"
+typeCheckTypeNote (TypeFunc t r) = TFunction (typeCheckTypeNote $ Type t) (typeCheckTypeNote r)
