@@ -26,6 +26,10 @@ checker = typeCheck Map.empty
 
 typeCheck :: Context -> Expr -> Either String TypeValue
 typeCheck ctx (TypeDef typedef) = typeCheckTypeDef ctx typedef
+typeCheck ctx (LetInfer name value next) = do
+    value' <- typeCheck ctx value
+    let ctx' = Map.insert name value' ctx
+    typeCheck ctx' next
 typeCheck ctx (Let name "Function" value next) = do
     value' <- typeCheck ctx value
     let ctx' = Map.insert name value' ctx
@@ -76,7 +80,7 @@ typeCheckLowTerm ctx (Plus x y) = do
     y' <- typeCheckHighTerm ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left $ "Calling sum with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
+        _ -> Left $ "Calling sum with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
 typeCheckLowTerm ctx (Minus x y) = do
     x' <- case x of
         HighTerm (Factor x') -> typeCheckFactor ctx x'
@@ -84,7 +88,7 @@ typeCheckLowTerm ctx (Minus x y) = do
     y' <- typeCheckHighTerm ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left $ "Calling subtraction with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
+        _ -> Left $ "Calling subtraction with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
  
 typeCheckHighTerm :: Context -> HighTerm -> Either String TypeValue
 typeCheckHighTerm ctx (Factor factor) = typeCheckFactor ctx factor
@@ -95,7 +99,7 @@ typeCheckHighTerm ctx (Div x y) = do
     y' <- typeCheckFactor ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left $ "Calling division with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
+        _ -> Left $ "Calling division with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
 typeCheckHighTerm ctx (Times x y) = do
     x' <- case x of
         Factor x' -> typeCheckFactor ctx x'
@@ -103,7 +107,7 @@ typeCheckHighTerm ctx (Times x y) = do
     y' <- typeCheckFactor ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        (l, r) -> Left $ "Calling multiplication with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
+        _ -> Left $ "Calling multiplication with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
 
 typeCheckFactor :: Context -> Factor -> Either String TypeValue
 typeCheckFactor ctx (Brack expr) = typeCheck ctx expr

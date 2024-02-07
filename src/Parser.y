@@ -37,6 +37,7 @@ module Parser (
 %%
 
 Expr     : let literal ':' literal '=' Expr in Expr              { Let $2 $4 $6 $8 }
+         | let literal '=' Expr in Expr                          { LetInfer $2 $4 $6 }
          | TypeDef                                               { TypeDef $1 }
 
 TypeDef  : type literal '=' literal in Expr                      { Type $2 $4 $6 }
@@ -68,6 +69,7 @@ parseError _ = error "Parse error"
 
 data Expr
       = Let String String Expr Expr
+      | LetInfer String Expr Expr
       | TypeDef TypeDef
       deriving Show
 
