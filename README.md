@@ -15,7 +15,7 @@ Grammar:
 <TypeNotation> ::= "typeof " <Name> | <CapitalName> | <TypeNotation> " -> " <CapitalName>
 <Name> ::= [a-z]+ [0-9]* | <CapitalName>
 <CapitalName> ::= [A-Z]+ [0-9]* <Name>*
-<BreakLine> ::= (" "*) ("\n"*))
+<BreakLine> ::= (" "*) ("\n"*)
 ```
 
 You can check the grammar [here](https://bnfplayground.pauliankline.com/)
