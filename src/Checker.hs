@@ -15,9 +15,9 @@ data TypeValue
     = TInt
     | TString
     | TBool
-    | TType TypeValue
     | TFunction TypeValue TypeValue
     deriving (Show, Eq)
+    -- | TType TypeValue
 
 type Context = Map String TypeValue
 
