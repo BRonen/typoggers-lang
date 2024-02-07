@@ -44,6 +44,7 @@ TypeDef  : type literal '=' literal in Expr                      { Type $2 $4 $6
          | FuncDef                                               { FuncDef $1 }
 
 FuncDef  : '(' literal ':' literal ')' ':' literal fatarrow Expr { Def $2 $4 $7 $9 }
+         | '(' literal ':' literal ')' fatarrow Expr             { DefInfer $2 $4 $7 }
          | FuncApp                                               { FuncApp $1 }
 
 FuncApp  : literal Expr                                          { App $1 $2 }
@@ -80,6 +81,7 @@ data TypeDef
 
 data FuncDef
       = Def String String String Expr
+      | DefInfer String String Expr
       | FuncApp FuncApp
       deriving Show
 

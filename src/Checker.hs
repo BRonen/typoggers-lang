@@ -50,6 +50,11 @@ typeCheckTypeDef ctx (Type _ _ next) = typeCheck ctx next -- TODO: type aliases 
 
 typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
 typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
+typeCheckFuncDef ctx (DefInfer param paramT body) = do
+    let paramT' = mapStringToTypeValue paramT
+    let ctx' = Map.insert param paramT' ctx
+    bodyT <- typeCheck ctx' body
+    pure $ TFunction paramT' bodyT
 typeCheckFuncDef ctx (Def param paramT retT body) = do
     let paramT' = mapStringToTypeValue paramT
     let retT' = mapStringToTypeValue retT
