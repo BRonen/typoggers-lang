@@ -5,16 +5,17 @@ WIP
 Grammar:
 
 ```rust
-<Expr> ::= "let " <Name>+ (": " <CapitalName>)? " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
-<TypeDef> ::= "type " <CapitalName> " = " ("typeof " <Name> | <CapitalName>) " in" <BreakLine> <Expr> | <FuncDef>
-<FuncDef> ::= "(" <Name> ": " <CapitalName> ")" (": " <CapitalName>)? " => " <Expr> | <FuncApp>
+<Expr> ::= "let " <Name>+ (": " <TypeNotation>)? " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
+<TypeDef> ::= "type " <CapitalName> " = " <TypeNotation> " in" <BreakLine> <Expr> | <FuncDef>
+<FuncDef> ::= "(" <Name> ": " <TypeNotation> ")" (": " <TypeNotation>)? " => " <Expr> | <FuncApp>
 <FuncApp> ::= <Name> (" " <Expr>)+ | <LowTerm>
 <LowTerm> ::= <LowTerm> (" + " | " - ") <HighTerm> | <HighTerm>
 <HighTerm> ::= <HighTerm> (" * " | " / ") <Factor> | <Factor>
 <Factor> ::= "\"" <Name> "\"" | [0-9]+ | "(" <Expr> ")" | <Name>
+<TypeNotation> ::= "typeof " <Name> | <CapitalName> | <TypeNotation> " -> " <CapitalName>
 <Name> ::= [a-z]+ [0-9]* | <CapitalName>
 <CapitalName> ::= [A-Z]+ [0-9]* <Name>*
-<BreakLine> ::= (" "*) ("\n"*)
+<BreakLine> ::= (" "*) ("\n"*))
 ```
 
 You can check the grammar [here](https://bnfplayground.pauliankline.com/)
@@ -35,7 +36,7 @@ Type Alias (Not implemented yet)
 ```rust
 type Baz = Int in
 let foo: Baz = 2 in // Comments
-let bar: Baz = 3 in
+let bar: typeof foo = 3 in
 foo + bar
 ```
 
@@ -45,7 +46,7 @@ Function definition
 type Baz = Int in
 let foo: Baz = 2 in // Comments
 let bar: Baz = 3 in
-let f: Function = (x: Baz): Baz => (y: Baz): Baz => x + y in
+let f: Int -> Int -> Int = (x: Baz): Baz => (y: Baz): Baz => x + y in
 (f foo bar) + 1
 ```
 
