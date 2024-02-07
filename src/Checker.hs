@@ -32,7 +32,7 @@ typeCheck ctx (LetInfer name value next) = do
     let ctx' = Map.insert name value' ctx
     typeCheck ctx' next
 typeCheck ctx (Let name t value next) = do
-    let t' = typeCheckTypeNote t
+    t' <- typeCheckTypeNote t
     let ctx' = Map.insert name t' ctx
     value' <- typeCheck ctx value
     if value' == t'
@@ -46,13 +46,13 @@ typeCheckTypeDef ctx (TypeAlias _ _ next) = typeCheck ctx next -- TODO: type ali
 typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
 typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
 typeCheckFuncDef ctx (DefInfer param paramT body) = do
-    let paramT' = typeCheckTypeNote paramT
+    paramT' <- typeCheckTypeNote paramT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     pure $ TFunction paramT' bodyT
 typeCheckFuncDef ctx (Def param paramT retT body) = do
-    let paramT' = typeCheckTypeNote paramT
-    let retT' = typeCheckTypeNote retT
+    paramT' <- typeCheckTypeNote paramT
+    retT' <- typeCheckTypeNote retT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     if bodyT == retT'
@@ -118,9 +118,12 @@ typeCheckFactor _ (Int _) = Right TInt
 typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
-typeCheckTypeNote :: TypeNote -> TypeValue
-typeCheckTypeNote (Type "Int") = TInt
-typeCheckTypeNote (Type "String") = TString
-typeCheckTypeNote (Type "Bool") = TBool
-typeCheckTypeNote (Type _) = error "Not implemented"
-typeCheckTypeNote (TypeFunc t r) = TFunction (typeCheckTypeNote $ Type t) (typeCheckTypeNote r)
+typeCheckTypeNote :: TypeNote -> Either String TypeValue
+typeCheckTypeNote (Type "Int") = Right TInt
+typeCheckTypeNote (Type "String") = Right TString
+typeCheckTypeNote (Type "Bool") = Right TBool
+typeCheckTypeNote (Type t) = Left $ "Type not implemented: " ++ t
+typeCheckTypeNote (TypeFunc t r) = do
+    t' <- typeCheckTypeNote $ Type t
+    r' <- typeCheckTypeNote r
+    pure $ TFunction t' r'
