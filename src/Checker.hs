@@ -11,159 +11,111 @@ import Parser (
     Factor (..)
     )
 
-type Context = Map String String
+data TypeValue
+    = TInt
+    | TString
+    | TBool
+    | TType TypeValue
+    | TFunction TypeValue TypeValue
+    deriving (Show, Eq)
 
-checker :: Expr -> Either String Expr
+type Context = Map String TypeValue
+
+checker :: Expr -> Either String TypeValue
 checker = typeCheck Map.empty
 
-typeCheck :: Context -> Expr -> Either String Expr
-typeCheck ctx (TypeDef typedef) = do
-    typedef' <- typeCheckTypeDef ctx typedef
-    pure $ TypeDef typedef'
-typeCheck ctx (Let name vartype value next) = do
-    let ctx' = Map.insert name vartype ctx
+typeCheck :: Context -> Expr -> Either String TypeValue
+typeCheck ctx (TypeDef typedef) = typeCheckTypeDef ctx typedef
+typeCheck ctx (Let name "Function" value next) = do
     value' <- typeCheck ctx value
-    next' <- typeCheck ctx' next
-    pure $ Let name vartype value' next'
+    let ctx' = Map.insert name value' ctx
+    case value' of
+        TFunction _ _ -> typeCheck ctx' next
+        _ -> Left $ "Var<" ++ name ++ "> of type <Function> trying to be assigned with <" ++ show value' ++ ">"
+typeCheck ctx (Let name vartype value next) = do
+    let varT = mapStringToTypeValue vartype
+    let ctx' = Map.insert name varT ctx
+    value' <- typeCheck ctx value
+    if value' == varT
+        then typeCheck ctx' next
+        else Left $ "Var<" ++ name ++ "> of type <" ++ show varT ++ "> trying to be assigned with <" ++ show value' ++ ">"
 
-typeCheckTypeDef :: Context -> TypeDef -> Either String TypeDef
-typeCheckTypeDef ctx (FuncDef funcdef) = do
-    funcdef' <- typeCheckFuncDef ctx funcdef
-    pure $ FuncDef funcdef'
-typeCheckTypeDef ctx (Type name value next) = do
-    next' <- typeCheck ctx next
-    pure $ Type name value next'
+typeCheckTypeDef :: Context -> TypeDef -> Either String TypeValue
+typeCheckTypeDef ctx (FuncDef funcdef) = typeCheckFuncDef ctx funcdef
+typeCheckTypeDef ctx (Type _ _ next) = typeCheck ctx next -- TODO: type aliases [TType]
 
-typeCheckFuncDef :: Context -> FuncDef -> Either String FuncDef
-typeCheckFuncDef ctx (FuncApp funcapp) = do
-    funcapp' <- typeCheckFuncApp ctx funcapp
-    pure $ FuncApp funcapp'
+typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
+typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
 typeCheckFuncDef ctx (Def param paramT retT body) = do
-    body' <- typeCheck ctx body
-    pure $ Def param paramT retT body'
+    let paramT' = mapStringToTypeValue paramT
+    let retT' = mapStringToTypeValue retT
+    let ctx' = Map.insert param paramT' ctx
+    bodyT <- typeCheck ctx' body
+    if bodyT == retT'
+        then pure $ TFunction paramT' retT'
+        else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show bodyT ++ ">"
 
-typeCheckFuncApp :: Context -> FuncApp -> Either String FuncApp
-typeCheckFuncApp ctx (LowTerm lowterm) = do
-    lowterm' <- typeCheckLowTerm ctx lowterm
-    pure $ LowTerm lowterm'
+typeCheckFuncApp :: Context -> FuncApp -> Either String TypeValue
+typeCheckFuncApp ctx (LowTerm lowterm) = typeCheckLowTerm ctx lowterm
 typeCheckFuncApp ctx (App name param) = do
-    param' <- typeCheck ctx param
-    pure $ App name param'
+    case Map.lookup name ctx of
+        Just (TFunction argT retT) -> do
+            paramT <- typeCheck ctx param
+            if argT == paramT
+                then pure retT
+                else Left $ "Trying to call Function<" ++ name ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
+        Just t -> Left $ "Applying invalid variable <" ++ name ++ "> of type <" ++ show t ++ ">"
+        Nothing -> Left $ "Variable not initialized: " ++ name
 
-typeCheckLowTerm :: Context -> LowTerm -> Either String LowTerm
-typeCheckLowTerm ctx (HighTerm highterm) = do
-    highterm' <- typeCheckHighTerm ctx highterm
-    pure $ HighTerm highterm'
+typeCheckLowTerm :: Context -> LowTerm -> Either String TypeValue
+typeCheckLowTerm ctx (HighTerm highterm) = typeCheckHighTerm ctx highterm
 typeCheckLowTerm ctx (Plus x y) = do
     x' <- case x of
-        HighTerm (Factor (Int x')) -> do
-            x'' <- typeCheckHighTerm ctx $ Factor $ Int x'
-            pure $ HighTerm x''
-        HighTerm (Factor (Name x')) -> do
-            case Map.lookup x' ctx of
-                Just "Int" -> do
-                    x'' <- typeCheckHighTerm ctx $ Factor $ Name x'
-                    pure $ HighTerm x''
-                _ -> Left "Trying to execute a Plus with a non-integer variable"
-        HighTerm (Factor _) -> Left "Trying to execute a Plus with a non-integer value"
+        HighTerm (Factor x') -> typeCheckFactor ctx x'
         _ -> typeCheckLowTerm ctx x
-    y' <- case y of
-        Factor (Int _) -> do
-            y' <- typeCheckHighTerm ctx y
-            pure y'
-        Factor (Name y') -> do
-            case Map.lookup y' ctx of
-                Just "Int" -> do
-                    pure $ Factor $ Name y'
-                _ -> Left "Trying to execute a Plus with a non-integer variable"
-        Factor _ -> Left "Trying to execute a Plus with a non-integer value"
-        _ -> do
-            y' <- typeCheckHighTerm ctx y
-            pure y'
-    pure $ Plus x' y'
+    y' <- typeCheckHighTerm ctx y
+    case (x', y') of
+        (TInt, TInt) -> pure TInt
+        _ -> Left "Invalid Params 1"
 typeCheckLowTerm ctx (Minus x y) = do
     x' <- case x of
-        HighTerm (Factor (Int x')) -> do
-            x'' <- typeCheckHighTerm ctx $ Factor $ Int x'
-            pure $ HighTerm x''
-        HighTerm (Factor (Name x')) -> do
-            case Map.lookup x' ctx of
-                Just "Int" -> do
-                    x'' <- typeCheckHighTerm ctx $ Factor $ Name x'
-                    pure $ HighTerm x''
-                _ -> Left "Trying to execute a Minus with a non-integer variable"
-        HighTerm (Factor _) -> Left "Trying to execute a Minus with a non-integer value"
+        HighTerm (Factor x') -> typeCheckFactor ctx x'
         _ -> typeCheckLowTerm ctx x
-    y' <- case y of
-        Factor (Int _) -> do
-            y' <- typeCheckHighTerm ctx y
-            pure y'
-        Factor (Name y') -> do
-            case Map.lookup y' ctx of
-                Just "Int" -> do
-                    pure $ Factor $ Name y'
-                _ -> Left "Trying to execute a Minus with a non-integer variable"
-        Factor _ -> Left "Trying to execute a Minus with a non-integer value"
-        _ -> do
-            y' <- typeCheckHighTerm ctx y
-            pure y'
-    pure $ Minus x' y'
+    y' <- typeCheckHighTerm ctx y
+    case (x', y') of
+        (TInt, TInt) -> pure TInt
+        _ -> Left "Invalid Params 2"
  
-typeCheckHighTerm :: Context -> HighTerm -> Either String HighTerm
-typeCheckHighTerm ctx (Factor factor) = do
-    factor' <- typeCheckFactor ctx factor
-    pure $ Factor factor'
+typeCheckHighTerm :: Context -> HighTerm -> Either String TypeValue
+typeCheckHighTerm ctx (Factor factor) = typeCheckFactor ctx factor
 typeCheckHighTerm ctx (Div x y) = do
     x' <- case x of
-        Factor (Int x') -> do
-            x'' <- typeCheckFactor ctx $ Int x'
-            pure $ Factor x''
-        Factor (Name x') -> do
-            case Map.lookup x' ctx of
-                Just "Int" -> do
-                    x'' <- typeCheckFactor ctx $ Name x'
-                    pure $ Factor x''
-                _ -> Left "Trying to execute a Division with a non-integer variable"
-        Factor _ -> Left "Trying to execute a Division with a non-integer value"
+        Factor x' -> typeCheckFactor ctx x'
         _ -> typeCheckHighTerm ctx x
-    y' <- case y of
-        Int _ -> do
-            y' <- typeCheckFactor ctx y
-            pure y'
-        Name y' -> do
-            case Map.lookup y' ctx of
-                Just "Int" -> do
-                    pure y
-                _ -> Left "Trying to execute a Division with a non-integer variable"
-        _ -> Left "Trying to execute a Division with a non-integer value"
-    pure $ Times x' y'
+    y' <- typeCheckFactor ctx y
+    case (x', y') of
+        (TInt, TInt) -> pure TInt
+        _ -> Left "Invalid Params 3"
 typeCheckHighTerm ctx (Times x y) = do
     x' <- case x of
-        Factor (Int x') -> do
-            x'' <- typeCheckFactor ctx $ Int x'
-            pure $ Factor x''
-        Factor (Name x') -> do
-            case Map.lookup x' ctx of
-                Just "Int" -> do
-                    x'' <- typeCheckFactor ctx $ Name x'
-                    pure $ Factor x''
-                _ -> Left "Trying to execute a Multiplication with a non-integer variable"
-        Factor _ -> Left "Trying to execute a Multiplication with a non-integer value"
+        Factor x' -> typeCheckFactor ctx x'
         _ -> typeCheckHighTerm ctx x
-    y' <- case y of
-        Int _ -> do
-            y' <- typeCheckFactor ctx y
-            pure y'
-        Name y' -> do
-            case Map.lookup y' ctx of
-                Just "Int" -> do
-                    pure y
-                _ -> Left "Trying to execute a Multiplication with a non-integer variable"
-        _ -> Left "Trying to execute a Multiplication with a non-integer value"
-    pure $ Times x' y'
+    y' <- typeCheckFactor ctx y
+    case (x', y') of
+        (TInt, TInt) -> pure TInt
+        (l, r) -> Left $ "Calling multiplication with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
 
-typeCheckFactor :: Context -> Factor -> Either String Factor
-typeCheckFactor ctx (Brack expr) = do
-    expr' <- typeCheck ctx expr
-    pure $ Brack expr'
-typeCheckFactor _ a = Right a
+typeCheckFactor :: Context -> Factor -> Either String TypeValue
+typeCheckFactor ctx (Brack expr) = typeCheck ctx expr
+typeCheckFactor ctx (Name name) = case Map.lookup name ctx of
+    Just t -> Right t
+    Nothing -> Left $ "Variable not initialized: " ++ name
+typeCheckFactor _ (Int _) = Right TInt
+typeCheckFactor _ (Bool _) = Right TBool
+typeCheckFactor _ (String _) = Right TString
+
+mapStringToTypeValue :: String -> TypeValue
+mapStringToTypeValue "String" = TString
+mapStringToTypeValue "Int" = TInt
+mapStringToTypeValue "Bool" = TBool
+mapStringToTypeValue s = error $ "Invalid string yet: " ++ s
