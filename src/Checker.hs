@@ -76,7 +76,7 @@ typeCheckLowTerm ctx (Plus x y) = do
     y' <- typeCheckHighTerm ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left "Invalid Params 1"
+        _ -> Left $ "Calling sum with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
 typeCheckLowTerm ctx (Minus x y) = do
     x' <- case x of
         HighTerm (Factor x') -> typeCheckFactor ctx x'
@@ -84,7 +84,7 @@ typeCheckLowTerm ctx (Minus x y) = do
     y' <- typeCheckHighTerm ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left "Invalid Params 2"
+        _ -> Left $ "Calling subtraction with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
  
 typeCheckHighTerm :: Context -> HighTerm -> Either String TypeValue
 typeCheckHighTerm ctx (Factor factor) = typeCheckFactor ctx factor
@@ -95,7 +95,7 @@ typeCheckHighTerm ctx (Div x y) = do
     y' <- typeCheckFactor ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
-        _ -> Left "Invalid Params 3"
+        _ -> Left $ "Calling division with invalid params: [ " ++ show l ++ " - " ++ show r ++ " ]"
 typeCheckHighTerm ctx (Times x y) = do
     x' <- case x of
         Factor x' -> typeCheckFactor ctx x'
