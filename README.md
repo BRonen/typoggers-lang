@@ -5,9 +5,9 @@ WIP
 Grammar:
 
 ```rust
-<Expr> ::= "let " <Name>+ ": " <CapitalName> " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
+<Expr> ::= "let " <Name>+ (": " <CapitalName>)? " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
 <TypeDef> ::= "type " <CapitalName> " = " ("typeof " <Name> | <CapitalName>) " in" <BreakLine> <Expr> | <FuncDef>
-<FuncDef> ::= "(" <Name> ": " <CapitalName> ")" ": " <CapitalName> " => " <Expr> | <FuncApp>
+<FuncDef> ::= "(" <Name> ": " <CapitalName> ")" (": " <CapitalName>)? " => " <Expr> | <FuncApp>
 <FuncApp> ::= <Name> (" " <Expr>)+ | <LowTerm>
 <LowTerm> ::= <LowTerm> (" + " | " - ") <HighTerm> | <HighTerm>
 <HighTerm> ::= <HighTerm> (" * " | " / ") <Factor> | <Factor>
@@ -19,7 +19,9 @@ Grammar:
 
 You can check the grammar [here](https://bnfplayground.pauliankline.com/)
 
-Examples:
+## Examples
+
+Variable Assignment
 
 ```rust
 // Comments
@@ -28,6 +30,8 @@ let bar: Int = 3 in
 foo + (let baz: Int = 2 in baz + bar)
 ```
 
+Type Alias (Not implemented yet)
+
 ```rust
 type Baz = Int in
 let foo: Baz = 2 in // Comments
@@ -35,10 +39,21 @@ let bar: Baz = 3 in
 foo + bar
 ```
 
+Function definition
+
 ```rust
 type Baz = Int in
 let foo: Baz = 2 in // Comments
 let bar: Baz = 3 in
 let f: Function = (x: Baz): Baz => (y: Baz): Baz => x + y in
+(f foo bar) + 1
+```
+
+Type inference
+
+```rust
+let foo = 2 in // Comments
+let bar = 3 in
+let f = (x: Baz) => (y: Baz) => x + y in
 (f foo bar) + 1
 ```
