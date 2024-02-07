@@ -58,3 +58,11 @@ let bar = 3 in
 let f = (x: Baz) => (y: Baz) => x + y in
 (f foo bar) + 1
 ```
+
+High order functions
+
+```rust
+let apply = (x: Int -> Int) => x 2 in
+let double = (y: Int) => y * 2 in
+apply double
+```
