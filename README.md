@@ -31,7 +31,7 @@ let bar: Int = 3 in
 foo + (let baz: Int = 2 in baz + bar)
 ```
 
-Type Alias (Not implemented yet)
+Type Alias (typeof not implemented yet)
 
 ```rust
 type Baz = Int in
