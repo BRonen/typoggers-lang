@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "apply",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "Int",TokenArrow,TokenLiteral "Int",TokenCB,TokenFatArrow,TokenLiteral "x",TokenInt 2,TokenIn,TokenLet,TokenLiteral "double",TokenEq,TokenOB,TokenLiteral "y",TokenColon,TokenLiteral "Int",TokenCB,TokenFatArrow,TokenLiteral "y",TokenTimes,TokenInt 2,TokenIn,TokenLiteral "apply",TokenLiteral "double"]
+
+ast:
+
+LetInfer "apply" (TypeDef (FuncDef (DefInfer "x" (TypeFunc "Int" (Type "Int")) (TypeDef (FuncDef (FuncApp (App "x" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2)))))))))))))) (LetInfer "double" (TypeDef (FuncDef (DefInfer "y" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Times (Factor (Name "y")) (Int 2)))))))))) (TypeDef (FuncDef (FuncApp (App "apply" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "double"))))))))))))
+
+type:
+
+TInt
