@@ -6,11 +6,10 @@ cabal-version: 2.2
 
 name:           typoggers-lang
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/typoggers-lang#readme>
-homepage:       https://github.com/githubuser/typoggers-lang#readme
-bug-reports:    https://github.com/githubuser/typoggers-lang/issues
-author:         Author name here
-maintainer:     example@example.com
+description:    Please see the README on GitHub at <https://github.com/bronen/typoggers-lang#readme>
+homepage:       https://github.com/bronen/typoggers-lang#readme
+bug-reports:    https://github.com/bronen/typoggers-lang/issues
+author:         Brenno Rodrigues
 copyright:      2024 Author name here
 license:        BSD-3-Clause
 license-file:   LICENSE
