@@ -1,0 +1,3 @@
+let apply = (x: Int -> Int) => x 2 in
+let double = (y: Int) => y * 2 in
+apply double
