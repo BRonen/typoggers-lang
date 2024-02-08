@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "s",TokenEq,TokenQuote,TokenString "hello world",TokenQuote,TokenIn,TokenLiteral "print",TokenLiteral "s"]
+
+ast:
+
+LetInfer "s" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "hello world"))))))) (TypeDef (FuncDef (FuncApp (App "print" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "s")))))))))))
+
+type:
+
+TString
