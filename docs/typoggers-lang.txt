@@ -3,7 +3,7 @@
 
 
 -- | Please see the README on GitHub at
---   <a>https://github.com/githubuser/typoggers-lang#readme</a>
+--   <a>https://github.com/bronen/typoggers-lang#readme</a>
 @package typoggers-lang
 @version 0.1.0.0
 

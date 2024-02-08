@@ -6,7 +6,7 @@ cabal-version: 2.2
 
 name:           typoggers-lang
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/typoggers-lang#readme>
+description:    Please see the README on GitHub at <https://github.com/bronen/typoggers-lang#readme>
 homepage:       https://github.com/bronen/typoggers-lang#readme
 bug-reports:    https://github.com/bronen/typoggers-lang/issues
 author:         BRonen
