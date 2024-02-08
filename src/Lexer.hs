@@ -39,6 +39,7 @@ lexLiteral cs =
    case literal of
       "let" -> TokenLet : lexer rest
       "type" -> TokenType : lexer rest
+      "typeof" -> TokenTypeof : lexer rest
       "in" -> TokenIn : lexer rest
       _ -> TokenLiteral literal : lexer rest
       where

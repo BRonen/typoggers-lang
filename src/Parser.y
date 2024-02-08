@@ -20,6 +20,7 @@ module Parser (
 %token
       let             { TokenLet }
       type            { TokenType }
+      typeof          { TokenTypeof }
       in              { TokenIn }
       int             { TokenInt $$ }
       bool            { TokenBool $$ }
@@ -69,6 +70,7 @@ Factor   : '"' string '"'                                          { String $2 }
 
 TypeNote : literal                                                 { Type $1 }
          | TypeNote arrow literal                                  { TypeFunc $3 $1 }
+         | typeof Expr                                             { Typeof $2 }
 
 {
 parseError :: [Token] -> a
@@ -118,12 +120,14 @@ data Factor
 
 data TypeNote
       = Type String
+      | Typeof Expr
       | TypeFunc String TypeNote
       deriving Show
 
 data Token
       = TokenLet
       | TokenType
+      | TokenTypeof
       | TokenIn
       | TokenInt Int
       | TokenBool Bool

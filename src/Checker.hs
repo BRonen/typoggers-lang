@@ -124,15 +124,16 @@ typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
 typeCheckTypeNote :: Context -> TypeNote -> Either String TypeValue
+typeCheckTypeNote ctx (Typeof expr) = typeCheck ctx expr
 typeCheckTypeNote _ (Type "Int") = Right TInt
 typeCheckTypeNote _ (Type "String") = Right TString
 typeCheckTypeNote _ (Type "Bool") = Right TBool
-typeCheckTypeNote ctx (TypeFunc t r) = do
-    t' <- typeCheckTypeNote ctx $ Type t
-    r' <- typeCheckTypeNote ctx r
-    pure $ TFunction t' r'
 typeCheckTypeNote ctx (Type t) = do
     case Map.lookup t ctx of
         Just (TType t') -> Right t'
         Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
         Nothing -> Left $ "Type not implemented: " ++ t
+typeCheckTypeNote ctx (TypeFunc t r) = do
+    t' <- typeCheckTypeNote ctx $ Type t
+    r' <- typeCheckTypeNote ctx r
+    pure $ TFunction t' r'
