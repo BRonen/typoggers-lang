@@ -74,7 +74,7 @@ TypeNote : literal                                                 { Type $1 }
 
 {
 parseError :: [Token] -> a
-parseError _ = error "Parse error"
+parseError tokens = error $ "Parse error: " ++ show tokens
 
 data Expr
       = Let String TypeNote Expr Expr
