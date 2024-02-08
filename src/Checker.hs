@@ -134,6 +134,6 @@ typeCheckTypeNote ctx (Type t) = do
         Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
         Nothing -> Left $ "Type not implemented: " ++ t
 typeCheckTypeNote ctx (TypeFunc t r) = do
-    t' <- typeCheckTypeNote ctx $ Type t
+    t' <- typeCheckTypeNote ctx t
     r' <- typeCheckTypeNote ctx r
     pure $ TFunction t' r'

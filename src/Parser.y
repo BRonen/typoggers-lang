@@ -40,16 +40,16 @@ module Parser (
 
 %%
 
-Expr     : let literal ':' TypeNote '=' Expr in Expr               { Let $2 $4 $6 $8 }
+Expr     : let literal ':' LowTypeNote '=' Expr in Expr            { Let $2 $4 $6 $8 }
          | let literal '=' Expr in Expr                            { LetInfer $2 $4 $6 }
          | TypeDef                                                 { TypeDef $1 }
 
-TypeDef  : type literal '=' TypeNote in Expr                       { TypeAlias $2 $4 $6 }
+TypeDef  : type literal '=' LowTypeNote in Expr                    { TypeAlias $2 $4 $6 }
          | FuncDef                                                 { FuncDef $1 }
 
-FuncDef  : '(' literal ':' TypeNote ')' ':' TypeNote fatarrow Expr { Def $2 $4 $7 $9 }
-         | '(' literal ':' TypeNote ')' fatarrow Expr              { DefInfer $2 $4 $7 }
-         | FuncApp                                                 { FuncApp $1 }
+FuncDef  : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { Def $2 $4 $7 $9 }
+         | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { DefInfer $2 $4 $7 }
+         | FuncApp                                                       { FuncApp $1 }
 
 FuncApp  : literal Expr                                            { App $1 $2 }
          | LowTerm                                                 { LowTerm $1 }
@@ -68,9 +68,12 @@ Factor   : '"' string '"'                                          { String $2 }
          | bool                                                    { Bool $1 }
          | '(' Expr ')'                                            { Brack $2 }
 
-TypeNote : literal                                                 { Type $1 }
-         | TypeNote arrow literal                                  { TypeFunc $3 $1 }
-         | typeof Expr                                             { Typeof $2 }
+LowTypeNote  : HighTypeNote arrow LowTypeNote                          { TypeFunc $1 $3 }
+             | HighTypeNote                                            { $1 }
+
+HighTypeNote : literal                                                 { Type $1 }
+             | typeof Expr                                             { Typeof $2 }
+             | '(' LowTypeNote ')'                                     { $2 }
 
 {
 parseError :: [Token] -> a
@@ -121,7 +124,7 @@ data Factor
 data TypeNote
       = Type String
       | Typeof Expr
-      | TypeFunc String TypeNote
+      | TypeFunc TypeNote TypeNote
       deriving Show
 
 data Token
