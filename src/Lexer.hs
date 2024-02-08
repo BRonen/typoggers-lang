@@ -2,7 +2,7 @@ module Lexer
     ( lexer
     ) where
 
-import Data.Char (isDigit, isAlpha, isSpace)
+import Data.Char (isDigit, isSpace)
 import Parser (Token (..))
 
 lexer :: String -> [Token]
@@ -22,8 +22,8 @@ lexer ('(':cs) = TokenOB : lexer cs
 lexer (')':cs) = TokenCB : lexer cs
 lexer (c:cs)
       | isSpace c = lexer cs
-      | isAlpha c = lexLiteral (c:cs)
       | isDigit c = lexNum (c:cs)
+      | otherwise = lexLiteral (c:cs)
 lexer _ = []
 
 lexNum :: String -> [Token]
@@ -36,11 +36,13 @@ lexStr cs = TokenString c : TokenQuote : (lexer $ tail rest)
 
 lexLiteral :: String -> [Token]
 lexLiteral cs =
-   case span isAlpha cs of
-      ("let", rest) -> TokenLet : lexer rest
-      ("type", rest)  -> TokenType : lexer rest
-      ("in", rest)  -> TokenIn : lexer rest
-      (literal, rest)   -> TokenLiteral literal : lexer rest
+   case literal of
+      "let" -> TokenLet : lexer rest
+      "type" -> TokenType : lexer rest
+      "in" -> TokenIn : lexer rest
+      _ -> TokenLiteral literal : lexer rest
+      where
+            (literal, rest) = span (\c -> not $ elem c [':', ' ']) cs
 
 lexComment :: String -> [Token]
 lexComment cs = lexer rest
