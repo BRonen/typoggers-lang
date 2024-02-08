@@ -1,0 +1,3 @@
+let value: Bool = True in
+let apply = (x: (Int -> typeof value)) => x 1 in
+apply ((y: Int) => value)

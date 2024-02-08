@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-LetInfer "apply" (TypeDef (FuncDef (DefInfer "x" (TypeFunc "Int" (Type "Int")) (TypeDef (FuncDef (FuncApp (App "x" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2)))))))))))))) (LetInfer "double" (TypeDef (FuncDef (DefInfer "y" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Times (Factor (Name "y")) (Int 2)))))))))) (TypeDef (FuncDef (FuncApp (App "apply" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "double"))))))))))))
+LetInfer "apply" (TypeDef (FuncDef (DefInfer "x" (TypeFunc (Type "Int") (Type "Int")) (TypeDef (FuncDef (FuncApp (App "x" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2)))))))))))))) (LetInfer "double" (TypeDef (FuncDef (DefInfer "y" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Times (Factor (Name "y")) (Int 2)))))))))) (TypeDef (FuncDef (FuncApp (App "apply" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "double"))))))))))))
 
 type:
 
