@@ -17,8 +17,8 @@ data TypeValue
     | TString
     | TBool
     | TFunction TypeValue TypeValue
+    | TType TypeValue
     deriving (Show, Eq)
-    -- | TType TypeValue
 
 type Context = Map String TypeValue
 
@@ -34,7 +34,7 @@ typeCheck ctx (LetInfer name value next) = do
     let ctx' = Map.insert name value' ctx
     typeCheck ctx' next
 typeCheck ctx (Let name t value next) = do
-    t' <- typeCheckTypeNote t
+    t' <- typeCheckTypeNote ctx t
     let ctx' = Map.insert name t' ctx
     value' <- typeCheck ctx value
     if value' == t'
@@ -43,18 +43,21 @@ typeCheck ctx (Let name t value next) = do
 
 typeCheckTypeDef :: Context -> TypeDef -> Either String TypeValue
 typeCheckTypeDef ctx (FuncDef funcdef) = typeCheckFuncDef ctx funcdef
-typeCheckTypeDef ctx (TypeAlias _ _ next) = typeCheck ctx next -- TODO: type aliases [TType]
+typeCheckTypeDef ctx (TypeAlias name t next) = do
+    t' <- typeCheckTypeNote ctx t
+    let ctx' = Map.insert name (TType t') ctx
+    typeCheck ctx' next
 
 typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
 typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
 typeCheckFuncDef ctx (DefInfer param paramT body) = do
-    paramT' <- typeCheckTypeNote paramT
+    paramT' <- typeCheckTypeNote ctx paramT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     pure $ TFunction paramT' bodyT
 typeCheckFuncDef ctx (Def param paramT retT body) = do
-    paramT' <- typeCheckTypeNote paramT
-    retT' <- typeCheckTypeNote retT
+    paramT' <- typeCheckTypeNote ctx paramT
+    retT' <- typeCheckTypeNote ctx retT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     if bodyT == retT'
@@ -120,12 +123,16 @@ typeCheckFactor _ (Int _) = Right TInt
 typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
-typeCheckTypeNote :: TypeNote -> Either String TypeValue
-typeCheckTypeNote (Type "Int") = Right TInt
-typeCheckTypeNote (Type "String") = Right TString
-typeCheckTypeNote (Type "Bool") = Right TBool
-typeCheckTypeNote (Type t) = Left $ "Type not implemented: " ++ t
-typeCheckTypeNote (TypeFunc t r) = do
-    t' <- typeCheckTypeNote $ Type t
-    r' <- typeCheckTypeNote r
+typeCheckTypeNote :: Context -> TypeNote -> Either String TypeValue
+typeCheckTypeNote _ (Type "Int") = Right TInt
+typeCheckTypeNote _ (Type "String") = Right TString
+typeCheckTypeNote _ (Type "Bool") = Right TBool
+typeCheckTypeNote ctx (TypeFunc t r) = do
+    t' <- typeCheckTypeNote ctx $ Type t
+    r' <- typeCheckTypeNote ctx r
     pure $ TFunction t' r'
+typeCheckTypeNote ctx (Type t) = do
+    case Map.lookup t ctx of
+        Just (TType t') -> Right t'
+        Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
+        Nothing -> Left $ "Type not implemented: " ++ t

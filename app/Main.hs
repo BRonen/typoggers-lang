@@ -8,7 +8,7 @@ import Backend.Eval (eval)
 main :: IO ()
 main = do
     -- let tokens = lexer "let apply = (x: Int -> Int) => x 2 in let double = (y: Int) => y * 2 in apply double"
-    let tokens = lexer "let v = 2 in v"
+    let tokens = lexer "type A = Int in type B = A in let hello: B = 2 in A"
     let ast = parse tokens
     case checker ast of
         Right resultT -> do
