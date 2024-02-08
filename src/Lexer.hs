@@ -43,7 +43,8 @@ lexLiteral cs =
       "in" -> TokenIn : lexer rest
       _ -> TokenLiteral literal : lexer rest
       where
-            (literal, rest) = span (\c -> not $ elem c [':', ' ']) cs
+            (literal, rest) = span (\c -> not $ elem c specialCharacters) cs
+            specialCharacters = [':', ' ', '\n', '(', ')', '=', '*', '/', '-', '+', '"']
 
 lexComment :: String -> [Token]
 lexComment cs = lexer rest
