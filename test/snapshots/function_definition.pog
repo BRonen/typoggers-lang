@@ -1,0 +1,4 @@
+type Baz = Int in
+let foo: Baz = 2 in // Comments
+let bar: typeof foo = 3 in
+foo + bar
