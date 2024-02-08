@@ -1,1 +1,1 @@
-let s = "hello world" in print s
+let _hello_world: String = "Hello world" in _hello_world

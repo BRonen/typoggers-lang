@@ -1,10 +1,10 @@
 tokens:
 
-[TokenLet,TokenLiteral "s",TokenEq,TokenQuote,TokenString "hello world",TokenQuote,TokenIn,TokenLiteral "print",TokenLiteral "s"]
+[TokenLet,TokenLiteral "_hello_world",TokenColon,TokenLiteral "String",TokenEq,TokenQuote,TokenString "Hello world",TokenQuote,TokenIn,TokenLiteral "_hello_world"]
 
 ast:
 
-LetInfer "s" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "hello world"))))))) (TypeDef (FuncDef (FuncApp (App "print" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "s")))))))))))
+Let "_hello_world" (Type "String") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "Hello world"))))))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "_hello_world")))))))
 
 type:
 
