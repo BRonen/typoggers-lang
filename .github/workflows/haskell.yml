@@ -35,6 +35,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cabal install happy
         cabal update --minimize-conflict-set
         cabal build --only-dependencies --enable-tests --enable-benchmarks
     - name: Build
