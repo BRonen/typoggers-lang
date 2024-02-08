@@ -28,25 +28,16 @@ genGoldenTest pogFile =
 
 generateOutput :: BL.ByteString -> IO BL.ByteString
 generateOutput contentPog = do
-  let tokens = lexer $ BLU.toString contentPog
-  let ast = parse tokens
-  let typecheck = checker ast
-  pure $ BLU.fromString $ concat $ case typecheck of
-    Right typecheck' -> [
-        "tokens:\n\n",
-        show tokens,
-        "\n\nast:\n\n",
-        show ast,
-        "\n\ntype:\n\n",
-        show typecheck',
-        "\n"
-      ]
-    Left err -> [
-        "tokens:\n\n",
-        show tokens,
-        "\n\nast:\n\n",
-        show ast,
-        "\n\ncheck err:\n\n",
-        show err,
-        "\n"
-      ]
+  pure $ BLU.fromString $ concat [lexerResult,
+                                  parserResult,
+                                  typecheckResult,
+                                  "\n"]
+  where
+    typecheckResult = case typecheck of
+      Right typecheck' -> "\n\ntype:\n\n" ++ show typecheck'
+      Left err -> "\n\ncheck err:\n\n" ++ show err
+    parserResult = "\n\nast:\n\n" ++ show ast
+    lexerResult = "tokens:\n\n" ++ show tokens
+    typecheck = checker ast
+    ast = parse tokens
+    tokens = lexer $ BLU.toString contentPog
