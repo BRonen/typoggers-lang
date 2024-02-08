@@ -23,7 +23,9 @@ data TypeValue
 type Context = Map String TypeValue
 
 checker :: Expr -> Either String TypeValue
-checker = typeCheck Map.empty
+checker = typeCheck baseCtx
+    where
+        baseCtx = fromList [("print", TFunction TString TString)]
 
 typeCheck :: Context -> Expr -> Either String TypeValue
 typeCheck ctx (TypeDef typedef) = typeCheckTypeDef ctx typedef

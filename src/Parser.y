@@ -22,8 +22,9 @@ module Parser (
       type            { TokenType }
       in              { TokenIn }
       int             { TokenInt $$ }
-      literal         { TokenLiteral $$ }
       bool            { TokenBool $$ }
+      string          { TokenString $$ }
+      literal         { TokenLiteral $$ }
       fatarrow        { TokenFatArrow }
       arrow           { TokenArrow }
       '"'             { TokenQuote }
@@ -60,7 +61,7 @@ HighTerm : HighTerm '*' Factor                                     { Times $1 $3
          | HighTerm '/' Factor                                     { Div $1 $3 }
          | Factor                                                  { Factor $1 }
 
-Factor   : '"' literal '"'                                         { String $2 }
+Factor   : '"' string '"'                                          { String $2 }
          | literal                                                 { Name $1 }
          | int                                                     { Int $1 }
          | bool                                                    { Bool $1 }
@@ -125,8 +126,9 @@ data Token
       | TokenType
       | TokenIn
       | TokenInt Int
-      | TokenLiteral String
       | TokenBool Bool
+      | TokenString String
+      | TokenLiteral String
       | TokenQuote
       | TokenFatArrow
       | TokenArrow

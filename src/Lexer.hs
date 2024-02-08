@@ -12,7 +12,7 @@ lexer ('F':'a':'l':'s':'e':cs) = TokenBool False : lexer cs
 lexer ('=':'>':cs) = TokenFatArrow : lexer cs
 lexer ('-':'>':cs) = TokenArrow : lexer cs
 lexer (':':cs) = TokenColon : lexer cs
-lexer ('"':cs) = TokenQuote : lexer cs
+lexer ('"':cs) = TokenQuote : lexStr cs
 lexer ('=':cs) = TokenEq : lexer cs
 lexer ('+':cs) = TokenPlus : lexer cs
 lexer ('-':cs) = TokenMinus : lexer cs
@@ -28,16 +28,20 @@ lexer _ = []
 
 lexNum :: String -> [Token]
 lexNum cs = TokenInt (read num) : lexer rest
-      where (num,rest) = span isDigit cs
+      where (num, rest) = span isDigit cs
+
+lexStr :: String -> [Token]
+lexStr cs = TokenString c : TokenQuote : (lexer $ tail rest)
+      where (c, rest) = span (\c' -> c' /= '"') cs
 
 lexLiteral :: String -> [Token]
 lexLiteral cs =
    case span isAlpha cs of
-      ("let",rest) -> TokenLet : lexer rest
-      ("type",rest)  -> TokenType : lexer rest
-      ("in",rest)  -> TokenIn : lexer rest
-      (literal,rest)   -> TokenLiteral literal : lexer rest
+      ("let", rest) -> TokenLet : lexer rest
+      ("type", rest)  -> TokenType : lexer rest
+      ("in", rest)  -> TokenIn : lexer rest
+      (literal, rest)   -> TokenLiteral literal : lexer rest
 
 lexComment :: String -> [Token]
 lexComment cs = lexer rest
-      where (_,rest) = span (\c -> c /= '\n') cs
+      where (_, rest) = span (\c -> c /= '\n') cs
