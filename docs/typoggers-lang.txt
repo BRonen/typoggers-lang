@@ -60,7 +60,7 @@ Brack :: Expr -> Factor
 data TypeNote
 Type :: String -> TypeNote
 Typeof :: Expr -> TypeNote
-TypeFunc :: String -> TypeNote -> TypeNote
+TypeFunc :: TypeNote -> TypeNote -> TypeNote
 instance GHC.Show.Show Parser.Factor
 instance GHC.Show.Show Parser.HighTerm
 instance GHC.Show.Show Parser.LowTerm
