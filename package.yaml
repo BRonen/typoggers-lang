@@ -1,10 +1,9 @@
 name:                typoggers-lang
 version:             0.1.0.0
-github:              "githubuser/typoggers-lang"
+github:              "bronen/typoggers-lang"
 license:             BSD-3-Clause
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2024 Author name here"
+author:              "BRonen"
+copyright:           "2024 Brenno Rodrigues"
 
 extra-source-files:
 - README.md
