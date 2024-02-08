@@ -1,0 +1,4 @@
+let foo = 2 in // Comments
+let bar = 3 in
+let f = (x: Baz) => (y: Baz) => x + y in
+(f foo bar) + 1
