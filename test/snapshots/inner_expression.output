@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "foo",TokenColon,TokenLiteral "Int",TokenEq,TokenInt 2,TokenIn,TokenLet,TokenLiteral "bar",TokenColon,TokenLiteral "Int",TokenEq,TokenInt 3,TokenIn,TokenLiteral "foo",TokenPlus,TokenOB,TokenLet,TokenLiteral "baz",TokenColon,TokenLiteral "Int",TokenEq,TokenInt 2,TokenIn,TokenLiteral "baz",TokenPlus,TokenLiteral "bar",TokenCB]
+
+ast:
+
+Let "foo" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2))))))) (Let "bar" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 3))))))) (TypeDef (FuncDef (FuncApp (LowTerm (Plus (HighTerm (Factor (Name "foo"))) (Factor (Brack (Let "baz" (Type "Int") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2))))))) (TypeDef (FuncDef (FuncApp (LowTerm (Plus (HighTerm (Factor (Name "baz"))) (Factor (Name "bar"))))))))))))))))
+
+type:
+
+TInt

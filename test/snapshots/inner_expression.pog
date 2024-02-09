@@ -1,0 +1,4 @@
+// Comments
+let foo: Int = 2 in
+let bar: Int = 3 in
+foo + (let baz: Int = 2 in baz + bar)
