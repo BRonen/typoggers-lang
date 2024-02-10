@@ -19,21 +19,25 @@ data TypeValue
     | TFunction TypeValue TypeValue
     | TType TypeValue
     | TUnion TypeValue TypeValue
+    | TIntersection TypeValue TypeValue
     deriving (Show)
 
 instance Eq TypeValue where
     x == y = case (x, y) of
-        (TFunction a b, TFunction c d) -> a == c || a == d || b == c || b == d
-        (TFunction a b, c)             -> c == a || c == b
-        (a, TFunction b c)             -> a == b || a == c
-        (TUnion a b, TUnion c d)       -> a == c || a == d || b == c || b == d
-        (TUnion a b, c)                -> c == a || c == b
-        (a, TUnion b c)                -> a == b || a == c
-        (TType a, TType b)             -> a == b
-        (TString, TString)             -> True
-        (TBool, TBool)                 -> True
-        (TInt, TInt)                   -> True
-        _                              -> False
+        (TFunction a b, TFunction c d)         -> a == c || a == d || b == c || b == d
+        (TFunction a b, c)                     -> c == a || c == b
+        (a, TFunction b c)                     -> a == b || a == c
+        (TUnion a b, TUnion c d)               -> a == c || a == d || b == c || b == d
+        (TUnion a b, c)                        -> c == a || c == b
+        (a, TUnion b c)                        -> a == b || a == c
+        (TIntersection a b, TIntersection c d) -> a == c && a == d && b == c && b == d
+        (TIntersection a b, c)                 -> c == a && c == b
+        (a, TIntersection b c)                 -> a == b && a == c
+        (TType a, TType b)                     -> a == b
+        (TString, TString)                     -> True
+        (TBool, TBool)                         -> True
+        (TInt, TInt)                           -> True
+        _                                      -> False
 
 type Context = Map String TypeValue
 
@@ -139,6 +143,10 @@ typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
 typeCheckTypeNote :: Context -> TypeNote -> Either String TypeValue
+typeCheckTypeNote ctx (TypeIntersection l r) = do
+    l' <- typeCheckTypeNote ctx l
+    r' <- typeCheckTypeNote ctx r
+    pure $ TIntersection l' r'
 typeCheckTypeNote ctx (TypeUnion l r) = do
     l' <- typeCheckTypeNote ctx l
     r' <- typeCheckTypeNote ctx r
