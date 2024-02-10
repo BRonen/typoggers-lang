@@ -75,3 +75,11 @@ type Id = (String -> String) & (Int -> Int) & (Bool -> Bool) in
 let id: Id = (x: String | Int | Bool) => x in
 id
 ```
+
+Logical operators
+
+```haskell
+let t: Bool = false || true in
+let f: Bool = false && true in
+t && f || t
+```
