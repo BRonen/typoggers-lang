@@ -18,7 +18,22 @@ data TypeValue
     | TBool
     | TFunction TypeValue TypeValue
     | TType TypeValue
-    deriving (Show, Eq)
+    | TUnion TypeValue TypeValue
+    deriving (Show)
+
+instance Eq TypeValue where
+    x == y = case (x, y) of
+        (TFunction a b, TFunction c d) -> a == c || a == d || b == c || b == d
+        (TFunction a b, c)             -> c == a || c == b
+        (a, TFunction b c)             -> a == b || a == c
+        (TUnion a b, TUnion c d)       -> a == c || a == d || b == c || b == d
+        (TUnion a b, c)                -> c == a || c == b
+        (a, TUnion b c)                -> a == b || a == c
+        (TType a, TType b)             -> a == b
+        (TString, TString)             -> True
+        (TBool, TBool)                 -> True
+        (TInt, TInt)                   -> True
+        _                              -> False
 
 type Context = Map String TypeValue
 
@@ -35,8 +50,8 @@ typeCheck ctx (LetInfer name value next) = do
     typeCheck ctx' next
 typeCheck ctx (Let name t value next) = do
     t' <- typeCheckTypeNote ctx t
-    let ctx' = Map.insert name t' ctx
     value' <- typeCheck ctx value
+    let ctx' = Map.insert name value' ctx
     if value' == t'
         then typeCheck ctx' next
         else Left $ "Var<" ++ name ++ "> of type <" ++ show t' ++ "> trying to be assigned with <" ++ show value' ++ ">"
@@ -124,6 +139,10 @@ typeCheckFactor _ (Bool _) = Right TBool
 typeCheckFactor _ (String _) = Right TString
 
 typeCheckTypeNote :: Context -> TypeNote -> Either String TypeValue
+typeCheckTypeNote ctx (TypeUnion l r) = do
+    l' <- typeCheckTypeNote ctx l
+    r' <- typeCheckTypeNote ctx r
+    pure $ TUnion l' r'
 typeCheckTypeNote ctx (Typeof expr) = typeCheck ctx expr
 typeCheckTypeNote _ (Type "Int") = Right TInt
 typeCheckTypeNote _ (Type "String") = Right TString
