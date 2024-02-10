@@ -128,6 +128,22 @@ typeCheckHighTerm ctx (Times x y) = do
     case (x', y') of
         (TInt, TInt) -> pure TInt
         _ -> Left $ "Calling multiplication with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+typeCheckHighTerm ctx (And x y) = do
+    x' <- case x of
+        Factor x' -> typeCheckFactor ctx x'
+        _ -> typeCheckHighTerm ctx x
+    y' <- typeCheckFactor ctx y
+    case (x', y') of
+        (TBool, TBool) -> pure TBool
+        _ -> Left $ "Calling <and> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+typeCheckHighTerm ctx (Or x y) = do
+    x' <- case x of
+        Factor x' -> typeCheckFactor ctx x'
+        _ -> typeCheckHighTerm ctx x
+    y' <- typeCheckFactor ctx y
+    case (x', y') of
+        (TBool, TBool) -> pure TBool
+        _ -> Left $ "Calling <or> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
 
 typeCheckFactor :: Context -> Factor -> Either String TypeValue
 typeCheckFactor ctx (Brack expr) = typeCheck ctx expr
