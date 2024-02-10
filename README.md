@@ -66,3 +66,11 @@ let apply = (x: Int -> Int) => x 2 in
 let double = (y: Int) => y * 2 in
 apply double
 ```
+
+Unions and intersections
+
+```haskell
+type Id = (String -> String) & (Int -> Int) & (Bool -> Bool) in
+let id: Id = (x: String | Int | Bool) => x in
+id
+```
