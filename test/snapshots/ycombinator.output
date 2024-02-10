@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLiteral "print",TokenQuote,TokenString "lol can't do it :)",TokenQuote]
+
+ast:
+
+TypeDef (FuncDef (FuncApp (App "print" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "lol can't do it :)"))))))))))
+
+type:
+
+TString
