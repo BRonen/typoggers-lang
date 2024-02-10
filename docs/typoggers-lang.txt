@@ -29,6 +29,7 @@ TokenDiv :: Token
 TokenOB :: Token
 TokenCB :: Token
 TokenColon :: Token
+TokenPipe :: Token
 data Expr
 Let :: String -> TypeNote -> Expr -> Expr -> Expr
 LetInfer :: String -> Expr -> Expr -> Expr
@@ -60,6 +61,7 @@ Brack :: Expr -> Factor
 data TypeNote
 Type :: String -> TypeNote
 Typeof :: Expr -> TypeNote
+TypeUnion :: TypeNote -> TypeNote -> TypeNote
 TypeFunc :: TypeNote -> TypeNote -> TypeNote
 instance GHC.Show.Show Parser.Factor
 instance GHC.Show.Show Parser.HighTerm
@@ -79,8 +81,8 @@ lexer :: String -> [Token]
 
 module Checker
 checker :: Expr -> Either String TypeValue
-instance GHC.Classes.Eq Checker.TypeValue
 instance GHC.Show.Show Checker.TypeValue
+instance GHC.Classes.Eq Checker.TypeValue
 
 module Backend.Eval
 eval :: Expr -> IO ()
