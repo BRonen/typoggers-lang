@@ -21,6 +21,7 @@ lexer ('/':cs) = TokenDiv : lexer cs
 lexer ('(':cs) = TokenOB : lexer cs
 lexer (')':cs) = TokenCB : lexer cs
 lexer ('|':cs) = TokenPipe : lexer cs
+lexer ('&':cs) = TokenAmpersand : lexer cs
 lexer (c:cs)
       | isSpace c = lexer cs
       | isDigit c = lexNum (c:cs)
@@ -45,7 +46,7 @@ lexLiteral cs =
       _ -> TokenLiteral literal : lexer rest
       where
             (literal, rest) = span (\c -> not $ elem c specialCharacters) cs
-            specialCharacters = [':', ' ', '\n', '(', ')', '=', '*', '/', '-', '+', '"', '|']
+            specialCharacters = [':', ' ', '\n', '(', ')', '=', '*', '/', '-', '+', '"', '|', '&']
 
 lexComment :: String -> [Token]
 lexComment cs = lexer rest
