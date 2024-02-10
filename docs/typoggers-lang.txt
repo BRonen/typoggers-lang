@@ -30,6 +30,7 @@ TokenOB :: Token
 TokenCB :: Token
 TokenColon :: Token
 TokenPipe :: Token
+TokenAmpersand :: Token
 data Expr
 Let :: String -> TypeNote -> Expr -> Expr -> Expr
 LetInfer :: String -> Expr -> Expr -> Expr
@@ -62,6 +63,7 @@ data TypeNote
 Type :: String -> TypeNote
 Typeof :: Expr -> TypeNote
 TypeUnion :: TypeNote -> TypeNote -> TypeNote
+TypeIntersection :: TypeNote -> TypeNote -> TypeNote
 TypeFunc :: TypeNote -> TypeNote -> TypeNote
 instance GHC.Show.Show Parser.Factor
 instance GHC.Show.Show Parser.HighTerm
