@@ -71,12 +71,12 @@ Factor       : '"' string '"'                                          { String 
              | '(' Expr ')'                                            { Brack $2 }
 
 LowTypeNote  : HighTypeNote arrow LowTypeNote                          { TypeFunc $1 $3 }
+             | HighTypeNote '|' LowTypeNote                            { TypeUnion $1 $3 }
+             | HighTypeNote '&' LowTypeNote                            { TypeIntersection $1 $3 }
              | HighTypeNote                                            { $1 }
 
 HighTypeNote : literal                                                 { Type $1 }
              | typeof Expr                                             { Typeof $2 }
-             | LowTypeNote '|' LowTypeNote                             { TypeUnion $1 $3 }
-             | LowTypeNote '&' LowTypeNote                             { TypeIntersection $1 $3 }
              | '(' LowTypeNote ')'                                     { $2 }
 
 {
