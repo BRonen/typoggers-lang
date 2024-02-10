@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "a",TokenColon,TokenLiteral "Bool",TokenEq,TokenBool True,TokenIn,TokenLet,TokenLiteral "b",TokenColon,TokenLiteral "Bool",TokenEq,TokenBool False,TokenIn,TokenLet,TokenLiteral "c",TokenEq,TokenLiteral "a",TokenOr,TokenLiteral "b",TokenIn,TokenLiteral "c",TokenOr,TokenBool False]
+
+ast:
+
+Let "a" (Type "Bool") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool True))))))) (Let "b" (Type "Bool") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool False))))))) (LetInfer "c" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Or (Factor (Name "a")) (Name "b"))))))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Or (Factor (Name "c")) (Bool False)))))))))
+
+type:
+
+TBool

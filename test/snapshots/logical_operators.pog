@@ -1,0 +1,4 @@
+let a: Bool = True in
+let b: Bool = False in
+let c = a || b in
+c || False
