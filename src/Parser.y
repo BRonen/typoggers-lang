@@ -28,6 +28,8 @@ module Parser (
       literal         { TokenLiteral $$ }
       fatarrow        { TokenFatArrow }
       arrow           { TokenArrow }
+      and             { TokenAnd }
+      or              { TokenOr }
       '"'             { TokenQuote }
       '='             { TokenEq }
       '+'             { TokenPlus }
@@ -62,6 +64,11 @@ LowTerm      : LowTerm '+' HighTerm                                    { Plus $1
 
 HighTerm     : HighTerm '*' Factor                                     { Times $1 $3 }
              | HighTerm '/' Factor                                     { Div $1 $3 }
+             | LogicalTerm                                             { $1 }
+             | Factor                                                  { Factor $1 }
+
+LogicalTerm  : LogicalTerm and Factor                                  { And $1 $3 }
+             | LogicalTerm or Factor                                   { Or $1 $3 }
              | Factor                                                  { Factor $1 }
 
 Factor       : '"' string '"'                                          { String $2 }
@@ -114,6 +121,8 @@ data LowTerm
 data HighTerm
       = Times HighTerm Factor
       | Div HighTerm Factor
+      | And HighTerm Factor
+      | Or HighTerm Factor
       | Factor Factor
       deriving Show
 
@@ -153,6 +162,8 @@ data Token
       | TokenOB
       | TokenCB
       | TokenColon
+      | TokenOr
+      | TokenAnd
       | TokenPipe
       | TokenAmpersand
       deriving Show
