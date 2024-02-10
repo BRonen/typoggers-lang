@@ -82,6 +82,7 @@ module Lexer
 lexer :: String -> [Token]
 
 module Checker
+data TypeValue
 checker :: Expr -> Either String TypeValue
 instance GHC.Show.Show Checker.TypeValue
 instance GHC.Classes.Eq Checker.TypeValue
