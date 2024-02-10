@@ -7,7 +7,7 @@ import Backend.Eval (eval)
 
 main :: IO ()
 main = do
-    let tokens = lexer "let value: Bool = True in let apply = (x: (Int -> typeof value)) => x 2 in apply ((y: Int) => value)"
+    let tokens = lexer "let value = (x: Bool | Int) => x in value"
     let ast = parse tokens
     case checker ast of
         Right resultT -> do
