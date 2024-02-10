@@ -20,7 +20,9 @@ lexer ('*':cs) = TokenTimes : lexer cs
 lexer ('/':cs) = TokenDiv : lexer cs
 lexer ('(':cs) = TokenOB : lexer cs
 lexer (')':cs) = TokenCB : lexer cs
+lexer ('|':'|':cs) = TokenOr : lexer cs
 lexer ('|':cs) = TokenPipe : lexer cs
+lexer ('&':'&':cs) = TokenAnd : lexer cs
 lexer ('&':cs) = TokenAmpersand : lexer cs
 lexer (c:cs)
       | isSpace c = lexer cs
