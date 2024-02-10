@@ -23,21 +23,17 @@ data TypeValue
     deriving (Show)
 
 instance Eq TypeValue where
-    x == y = case (x, y) of
-        (TFunction a b, TFunction c d)         -> a == c || a == d || b == c || b == d
-        (TFunction a b, c)                     -> c == a || c == b
-        (a, TFunction b c)                     -> a == b || a == c
-        (TUnion a b, TUnion c d)               -> a == c || a == d || b == c || b == d
-        (TUnion a b, c)                        -> c == a || c == b
-        (a, TUnion b c)                        -> a == b || a == c
-        (TIntersection a b, TIntersection c d) -> a == c && a == d && b == c && b == d
-        (TIntersection a b, c)                 -> c == a && c == b
-        (a, TIntersection b c)                 -> a == b && a == c
-        (TType a, TType b)                     -> a == b
-        (TString, TString)                     -> True
-        (TBool, TBool)                         -> True
-        (TInt, TInt)                           -> True
-        _                                      -> False
+    received == expected = case (received, expected) of
+        (TIntersection left right, _)                   -> left == expected || right == expected
+        (TUnion left right, _)                          -> left == expected || right == expected
+        (_, TIntersection left right)                   -> received == left && received == right
+        (_, TUnion left right)                          -> received == left && received == right
+        (TFunction param ret, TFunction param' ret')    -> param == param' && ret == ret'
+        (TType received', TType expected')              -> received' == expected'
+        (TString, TString)                              -> True
+        (TBool, TBool)                                  -> True
+        (TInt, TInt)                                    -> True
+        _                                               -> False
 
 type Context = Map String TypeValue
 
