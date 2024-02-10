@@ -1,4 +1,4 @@
-module Checker (checker) where
+module Checker (TypeValue, checker) where
 
 import Data.Map as Map
 import Parser (
