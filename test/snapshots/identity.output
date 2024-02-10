@@ -1,0 +1,11 @@
+tokens:
+
+[TokenType,TokenLiteral "Id",TokenEq,TokenOB,TokenLiteral "String",TokenArrow,TokenLiteral "String",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Int",TokenArrow,TokenLiteral "Int",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Bool",TokenArrow,TokenLiteral "Bool",TokenCB,TokenIn,TokenLet,TokenLiteral "id",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "String",TokenPipe,TokenLiteral "Int",TokenPipe,TokenLiteral "Bool",TokenCB,TokenFatArrow,TokenLiteral "x",TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenQuote,TokenString "hello world",TokenQuote,TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenBool True,TokenIn,TokenLiteral "id",TokenInt 1]
+
+ast:
+
+TypeDef (TypeAlias "Id" (TypeIntersection (TypeFunc (Type "String") (Type "String")) (TypeIntersection (TypeFunc (Type "Int") (Type "Int")) (TypeFunc (Type "Bool") (Type "Bool")))) (LetInfer "id" (TypeDef (FuncDef (DefInfer "x" (TypeUnion (Type "String") (TypeUnion (Type "Int") (Type "Bool"))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "x")))))))))) (LetInfer "_" (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "hello world"))))))))))) (LetInfer "_" (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool True))))))))))) (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 1)))))))))))))))
+
+type:
+
+TUnion TString (TUnion TInt TBool)

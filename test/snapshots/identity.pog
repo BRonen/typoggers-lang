@@ -1,0 +1,5 @@
+type Id = (String -> String) & (Int -> Int) & (Bool -> Bool) in
+let id = (x: String | Int | Bool) => x in
+let _ = id "hello world" in
+let _ = id True in
+id 1
