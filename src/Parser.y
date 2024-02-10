@@ -38,6 +38,7 @@ module Parser (
       ')'             { TokenCB }
       ':'             { TokenColon }
       '|'             { TokenPipe }
+      '&'             { TokenAmpersand }
 
 %%
 
@@ -75,6 +76,7 @@ LowTypeNote  : HighTypeNote arrow LowTypeNote                          { TypeFun
 HighTypeNote : literal                                                 { Type $1 }
              | typeof Expr                                             { Typeof $2 }
              | LowTypeNote '|' LowTypeNote                             { TypeUnion $1 $3 }
+             | LowTypeNote '&' LowTypeNote                             { TypeIntersection $1 $3 }
              | '(' LowTypeNote ')'                                     { $2 }
 
 {
@@ -127,6 +129,7 @@ data TypeNote
       = Type String
       | Typeof Expr
       | TypeUnion TypeNote TypeNote
+      | TypeIntersection TypeNote TypeNote
       | TypeFunc TypeNote TypeNote
       deriving Show
 
@@ -151,5 +154,6 @@ data Token
       | TokenCB
       | TokenColon
       | TokenPipe
+      | TokenAmpersand
       deriving Show
 }
