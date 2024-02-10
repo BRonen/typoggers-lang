@@ -5,18 +5,18 @@ WIP
 Grammar:
 
 ```ocaml
-<Expr> ::= "let " <Name>+ (": " <LowTypeNotation>)? " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
-<TypeDef> ::= "type " <CapitalName> " = " <LowTypeNotation> " in" <BreakLine> <Expr> | <FuncDef>
-<FuncDef> ::= "(" <Name> ": " <LowTypeNotation> ")" (": " <LowTypeNotation>)? " => " <Expr> | <FuncApp>
-<FuncApp> ::= <Name> (" " <Expr>)+ | <LowTerm>
-<LowTerm> ::= <LowTerm> (" + " | " - ") <HighTerm> | <HighTerm>
-<HighTerm> ::= <HighTerm> (" * " | " / ") <Factor> | <Factor>
-<Factor> ::= "\"" <Name> "\"" | [0-9]+ | "(" <Expr> ")" | <Name>
-<LowTypeNotation> ::= <LowTypeNotation> " -> " <HighTypeNotation> | <LowTypeNotation> " | " <HighTypeNotation> | <LowTypeNotation> " & " <HighTypeNotation> | <HighTypeNotation>
+<Expr>             ::= "let " <Name>+ (": " <LowTypeNotation>)? " = " <Expr> " in" <BreakLine> <Expr> | <TypeDef>
+<TypeDef>          ::= "type " <CapitalName> " = " <LowTypeNotation> " in" <BreakLine> <Expr> | <FuncDef>
+<FuncDef>          ::= "(" <Name> ": " <LowTypeNotation> ")" (": " <LowTypeNotation>)? " => " <Expr> | <FuncApp>
+<FuncApp>          ::= <Name> (" " <Expr>)+ | <LowTerm>
+<LowTerm>          ::= <LowTerm> (" + " | " - ") <HighTerm> | <HighTerm>
+<HighTerm>         ::= <HighTerm> (" * " | " / ") <Factor> | <Factor>
+<Factor>           ::= "\"" <Name> "\"" | [0-9]+ | "(" <Expr> ")" | <Name>
+<LowTypeNotation>  ::= <LowTypeNotation> " -> " <HighTypeNotation> | <LowTypeNotation> " | " <HighTypeNotation> | <LowTypeNotation> " & " <HighTypeNotation> | <HighTypeNotation>
 <HighTypeNotation> ::= "typeof " <Name> | <CapitalName> | "(" <LowTypeNotation> ")"
-<Name> ::= [a-z]+ [0-9]* | <CapitalName>
-<CapitalName> ::= [A-Z]+ [0-9]* <Name>*
-<BreakLine> ::= (" "*) ("\n"*)
+<Name>             ::= [a-z]+ [0-9]* | <CapitalName>
+<CapitalName>      ::= [A-Z]+ [0-9]* <Name>*
+<BreakLine>        ::= (" "*) ("\n"*)
 ```
 
 You can check the grammar [here](https://bnfplayground.pauliankline.com/)
