@@ -22,12 +22,6 @@ dependencies:
 - base >= 4.7 && < 5
 - array >= 0.5.6.0
 - containers
-- tasty
-- tasty-hunit
-- tasty-golden
-- filepath
-- bytestring
-- utf8-string
 
 ghc-options:
 - -Wall
@@ -64,3 +58,9 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - typoggers-lang
+    - tasty
+    - tasty-hunit
+    - tasty-golden
+    - filepath
+    - bytestring
+    - utf8-string
