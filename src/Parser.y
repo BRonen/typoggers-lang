@@ -65,7 +65,6 @@ LowTerm      : LowTerm '+' HighTerm                                    { Plus $1
 HighTerm     : HighTerm '*' Factor                                     { Times $1 $3 }
              | HighTerm '/' Factor                                     { Div $1 $3 }
              | LogicalTerm                                             { $1 }
-             | Factor                                                  { Factor $1 }
 
 LogicalTerm  : LogicalTerm and Factor                                  { And $1 $3 }
              | LogicalTerm or Factor                                   { Or $1 $3 }
