@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-TypeDef (TypeAlias "Id" (TypeIntersection (TypeFunc (Type "String") (Type "String")) (TypeIntersection (TypeFunc (Type "Int") (Type "Int")) (TypeFunc (Type "Bool") (Type "Bool")))) (LetInfer "id" (TypeDef (FuncDef (DefInfer "x" (TypeUnion (Type "String") (TypeUnion (Type "Int") (Type "Bool"))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "x")))))))))) (LetInfer "_" (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "hello world"))))))))))) (LetInfer "_" (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool True))))))))))) (TypeDef (FuncDef (FuncApp (App "id" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 1)))))))))))))))
+STypeAlias "Id" (STypeIntersection (STypeFunc (SType "String") (SType "String")) (STypeIntersection (STypeFunc (SType "Int") (SType "Int")) (STypeFunc (SType "Bool") (SType "Bool")))) (SLetInfer "id" (SDefInfer "x" (STypeUnion (SType "String") (STypeUnion (SType "Int") (SType "Bool"))) (SName "x")) (SLetInfer "_" (SApp (SName "id") (SString "hello world")) (SLetInfer "_" (SApp (SName "id") (SBool True)) (SApp (SName "id") (SInt 1)))))
 
 type:
 

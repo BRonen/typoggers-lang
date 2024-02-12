@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-TypeDef (FuncDef (FuncApp (App "print" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "lol can't do it :)"))))))))))
+SApp (SName "print") (SString "lol can't do it :)")
 
 type:
 

@@ -1,11 +1,11 @@
 tokens:
 
-[TokenLet,TokenLiteral "foo",TokenEq,TokenInt 2,TokenIn,TokenLet,TokenLiteral "bar",TokenEq,TokenInt 3,TokenIn,TokenLet,TokenLiteral "f",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "Baz",TokenCB,TokenFatArrow,TokenOB,TokenLiteral "y",TokenColon,TokenLiteral "Baz",TokenCB,TokenFatArrow,TokenLiteral "x",TokenPlus,TokenLiteral "y",TokenIn,TokenOB,TokenLiteral "f",TokenLiteral "foo",TokenLiteral "bar",TokenCB,TokenPlus,TokenInt 1]
+[TokenType,TokenLiteral "Baz",TokenEq,TokenLiteral "Int",TokenIn,TokenLet,TokenLiteral "foo",TokenEq,TokenInt 2,TokenIn,TokenLet,TokenLiteral "bar",TokenEq,TokenInt 3,TokenIn,TokenLet,TokenLiteral "f",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "Baz",TokenCB,TokenFatArrow,TokenOB,TokenLiteral "y",TokenColon,TokenLiteral "Baz",TokenCB,TokenFatArrow,TokenLiteral "x",TokenPlus,TokenLiteral "y",TokenIn,TokenOB,TokenOB,TokenLiteral "f",TokenLiteral "foo",TokenCB,TokenLiteral "bar",TokenCB,TokenPlus,TokenInt 1]
 
 ast:
 
-LetInfer "foo" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2))))))) (LetInfer "bar" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 3))))))) (LetInfer "f" (TypeDef (FuncDef (DefInfer "x" (Type "Baz") (TypeDef (FuncDef (DefInfer "y" (Type "Baz") (TypeDef (FuncDef (FuncApp (LowTerm (Plus (HighTerm (Factor (Name "x"))) (Factor (Name "y"))))))))))))) (TypeDef (FuncDef (FuncApp (LowTerm (Plus (HighTerm (Factor (Brack (TypeDef (FuncDef (FuncApp (App "f" (TypeDef (FuncDef (FuncApp (App "foo" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "bar")))))))))))))))))) (Factor (Int 1)))))))))
+STypeAlias "Baz" (SType "Int") (SLetInfer "foo" (SInt 2) (SLetInfer "bar" (SInt 3) (SLetInfer "f" (SDefInfer "x" (SType "Baz") (SDefInfer "y" (SType "Baz") (SPlus (SName "x") (SName "y")))) (SPlus (SBrack (SApp (SApp (SName "f") (SName "foo")) (SName "bar"))) (SInt 1)))))
 
-check err:
+type:
 
-"Type not implemented: Baz"
+TInt
