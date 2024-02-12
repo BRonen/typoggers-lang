@@ -48,7 +48,8 @@ FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { S
              | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { SDefInfer $2 $4 $7 }
              | FuncApp                                                       { $1 }
 
-FuncApp      : literal Expr                                                  { SApp $1 $2 }
+FuncApp      : literal Expr                                                  { SApp (SName $1) $2 }
+             | '(' Expr ')' Expr                                             { SApp $2 $4 }
              | LowTerm                                                       { $1 }
 
 LowTerm      : LowTerm '+' HighTerm                                          { SPlus $1 $3 }
@@ -90,7 +91,7 @@ data SExpr
       | STypeAlias String SExpr SExpr
       | SDef String SExpr SExpr SExpr
       | SDefInfer String SExpr SExpr
-      | SApp String SExpr
+      | SApp SExpr SExpr
       | SPlus SExpr SExpr
       | SMinus SExpr SExpr
       | STimes SExpr SExpr
