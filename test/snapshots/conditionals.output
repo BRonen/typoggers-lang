@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "a",TokenEq,TokenIf,TokenBool True,TokenThen,TokenInt 0,TokenElse,TokenInt 3,TokenIn,TokenLet,TokenLiteral "b",TokenEq,TokenIf,TokenBool False,TokenThen,TokenInt 0,TokenElse,TokenInt 5,TokenIn,TokenLiteral "a",TokenPlus,TokenLiteral "b"]
+
+ast:
+
+SLetInfer "a" (SConditional (SBool True) (SInt 0) (SInt 3)) (SLetInfer "b" (SConditional (SBool False) (SInt 0) (SInt 5)) (SPlus (SName "a") (SName "b")))
+
+type:
+
+TInt
