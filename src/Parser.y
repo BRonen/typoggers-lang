@@ -4,6 +4,8 @@ module Parser (
       Token (..),
       SExpr (..),
       ) where
+
+import Lexer (Token (..))
 }
 
 %name parse
@@ -108,31 +110,5 @@ data SExpr
       | STypeUnion SExpr SExpr
       | STypeIntersection SExpr SExpr
       | STypeFunc SExpr SExpr
-      deriving Show
-
-data Token
-      = TokenLet
-      | TokenType
-      | TokenTypeof
-      | TokenIn
-      | TokenInt Int
-      | TokenBool Bool
-      | TokenString String
-      | TokenLiteral String
-      | TokenQuote
-      | TokenFatArrow
-      | TokenArrow
-      | TokenEq
-      | TokenPlus
-      | TokenMinus
-      | TokenTimes
-      | TokenDiv
-      | TokenOB
-      | TokenCB
-      | TokenColon
-      | TokenOr
-      | TokenAnd
-      | TokenPipe
-      | TokenAmpersand
       deriving Show
 }
