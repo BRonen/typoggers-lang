@@ -134,6 +134,7 @@ typeCheck ctx (STypeUnion l r) = do
     r' <- typeCheck ctx r
     pure $ TUnion l' r'
 
+typeCheck ctx (STypeof expr) = typeCheck ctx expr
 typeCheck _ (SType "Int") = Right TInt
 typeCheck _ (SType "String") = Right TString
 typeCheck _ (SType "Bool") = Right TBool
@@ -146,3 +147,5 @@ typeCheck ctx (STypeFunc t r) = do
     t' <- typeCheck ctx t
     r' <- typeCheck ctx r
     pure $ TFunction t' r'
+
+typeCheck _ s = error $ "Checking invalid node: " ++ show s
