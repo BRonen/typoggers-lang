@@ -83,3 +83,11 @@ let t: Bool = false || true in
 let f: Bool = false && true in
 t && f || t
 ```
+
+Conditionals
+
+```haskell
+let a = if True then 0 else 3 in
+let b = if False then 0 else 5 in
+a + b
+```
