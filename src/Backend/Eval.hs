@@ -1,6 +1,6 @@
 module Backend.Eval (eval) where
 
-import Parser (Expr (..))
+import Parser (SExpr (..))
 
-eval :: Expr -> IO ()
+eval :: SExpr -> IO ()
 eval expr = print expr
