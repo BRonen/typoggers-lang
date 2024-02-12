@@ -67,15 +67,15 @@ typeCheck ctx (SDef param paramT retT body) = do
         then pure $ TFunction paramT' retT'
         else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show bodyT ++ ">"
 
-typeCheck ctx (SApp name param) = do
-    case Map.lookup name ctx of
-        Just (TFunction argT retT) -> do
+typeCheck ctx (SApp func param) = do
+    funcT <- typeCheck ctx func
+    case funcT of
+        TFunction argT retT -> do
             paramT <- typeCheck ctx param
             if argT == paramT
                 then pure retT
-                else Left $ "Trying to call Function<" ++ name ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
-        Just t -> Left $ "Applying invalid variable <" ++ name ++ "> of type <" ++ show t ++ ">"
-        Nothing -> Left $ "Variable not initialized: " ++ name
+                else Left $ "Trying to call Function<" ++ show func ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
+        t -> Left $ "Applying invalid variable <" ++ show func ++ "> of type <" ++ show t ++ ">"
 
 typeCheck ctx (SPlus x y) = do
     x' <- typeCheck ctx x
