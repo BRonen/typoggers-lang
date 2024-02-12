@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-TypeDef (TypeAlias "Baz" (Type "Int") (Let "foo" (Type "Baz") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 2))))))) (Let "bar" (Typeof (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "foo")))))))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Int 3))))))) (TypeDef (FuncDef (FuncApp (LowTerm (Plus (HighTerm (Factor (Name "foo"))) (Factor (Name "bar"))))))))))
+STypeAlias "Baz" (SType "Int") (SLet "foo" (SType "Baz") (SInt 2) (SLet "bar" (STypeof (SName "foo")) (SInt 3) (SPlus (SName "foo") (SName "bar"))))
 
 type:
 

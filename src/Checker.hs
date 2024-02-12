@@ -2,14 +2,7 @@ module Checker (TypeValue, checker) where
 
 import Data.Map as Map
 import Parser (
-    Expr (..),
-    TypeDef (..),
-    FuncDef (..),
-    FuncApp (..),
-    LowTerm (..),
-    HighTerm (..),
-    Factor (..),
-    TypeNote (..)
+    SExpr (..)
     )
 
 data TypeValue
@@ -37,142 +30,122 @@ instance Eq TypeValue where
 
 type Context = Map String TypeValue
 
-checker :: Expr -> Either String TypeValue
+checker :: SExpr -> Either String TypeValue
 checker = typeCheck baseCtx
     where
         baseCtx = fromList [("print", TFunction TString TString)]
 
-typeCheck :: Context -> Expr -> Either String TypeValue
-typeCheck ctx (TypeDef typedef) = typeCheckTypeDef ctx typedef
-typeCheck ctx (LetInfer name value next) = do
+typeCheck :: Context -> SExpr -> Either String TypeValue
+typeCheck ctx (SLetInfer name value next) = do
     value' <- typeCheck ctx value
     let ctx' = Map.insert name value' ctx
     typeCheck ctx' next
-typeCheck ctx (Let name t value next) = do
-    t' <- typeCheckTypeNote ctx t
+typeCheck ctx (SLet name t value next) = do
+    t' <- typeCheck ctx t
     value' <- typeCheck ctx value
     let ctx' = Map.insert name value' ctx
     if value' == t'
         then typeCheck ctx' next
         else Left $ "Var<" ++ name ++ "> of type <" ++ show t' ++ "> trying to be assigned with <" ++ show value' ++ ">"
 
-typeCheckTypeDef :: Context -> TypeDef -> Either String TypeValue
-typeCheckTypeDef ctx (FuncDef funcdef) = typeCheckFuncDef ctx funcdef
-typeCheckTypeDef ctx (TypeAlias name t next) = do
-    t' <- typeCheckTypeNote ctx t
+typeCheck ctx (STypeAlias name t next) = do
+    t' <- typeCheck ctx t
     let ctx' = Map.insert name (TType t') ctx
     typeCheck ctx' next
 
-typeCheckFuncDef :: Context -> FuncDef -> Either String TypeValue
-typeCheckFuncDef ctx (FuncApp funcapp) = typeCheckFuncApp ctx funcapp
-typeCheckFuncDef ctx (DefInfer param paramT body) = do
-    paramT' <- typeCheckTypeNote ctx paramT
+typeCheck ctx (SDefInfer param paramT body) = do
+    paramT' <- typeCheck ctx paramT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     pure $ TFunction paramT' bodyT
-typeCheckFuncDef ctx (Def param paramT retT body) = do
-    paramT' <- typeCheckTypeNote ctx paramT
-    retT' <- typeCheckTypeNote ctx retT
+typeCheck ctx (SDef param paramT retT body) = do
+    paramT' <- typeCheck ctx paramT
+    retT' <- typeCheck ctx retT
     let ctx' = Map.insert param paramT' ctx
     bodyT <- typeCheck ctx' body
     if bodyT == retT'
         then pure $ TFunction paramT' retT'
         else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show bodyT ++ ">"
 
-typeCheckFuncApp :: Context -> FuncApp -> Either String TypeValue
-typeCheckFuncApp ctx (LowTerm lowterm) = typeCheckLowTerm ctx lowterm
-typeCheckFuncApp ctx (App name param) = do
-    case Map.lookup name ctx of
-        Just (TFunction argT retT) -> do
+typeCheck ctx (SApp func param) = do
+    funcT <- typeCheck ctx func
+    case funcT of
+        TFunction argT retT -> do
             paramT <- typeCheck ctx param
             if argT == paramT
                 then pure retT
-                else Left $ "Trying to call Function<" ++ name ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
-        Just t -> Left $ "Applying invalid variable <" ++ name ++ "> of type <" ++ show t ++ ">"
-        Nothing -> Left $ "Variable not initialized: " ++ name
+                else Left $ "Trying to call Function<" ++ show func ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
+        t -> Left $ "Applying invalid variable <" ++ show func ++ "> of type <" ++ show t ++ ">"
 
-typeCheckLowTerm :: Context -> LowTerm -> Either String TypeValue
-typeCheckLowTerm ctx (HighTerm highterm) = typeCheckHighTerm ctx highterm
-typeCheckLowTerm ctx (Plus x y) = do
-    x' <- case x of
-        HighTerm (Factor x') -> typeCheckFactor ctx x'
-        _ -> typeCheckLowTerm ctx x
-    y' <- typeCheckHighTerm ctx y
+typeCheck ctx (SPlus x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
         _ -> Left $ "Calling sum with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
-typeCheckLowTerm ctx (Minus x y) = do
-    x' <- case x of
-        HighTerm (Factor x') -> typeCheckFactor ctx x'
-        _ -> typeCheckLowTerm ctx x
-    y' <- typeCheckHighTerm ctx y
+typeCheck ctx (SMinus x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
         _ -> Left $ "Calling subtraction with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
- 
-typeCheckHighTerm :: Context -> HighTerm -> Either String TypeValue
-typeCheckHighTerm ctx (Factor factor) = typeCheckFactor ctx factor
-typeCheckHighTerm ctx (Div x y) = do
-    x' <- case x of
-        Factor x' -> typeCheckFactor ctx x'
-        _ -> typeCheckHighTerm ctx x
-    y' <- typeCheckFactor ctx y
+
+typeCheck ctx (SDiv x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
         _ -> Left $ "Calling division with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
-typeCheckHighTerm ctx (Times x y) = do
-    x' <- case x of
-        Factor x' -> typeCheckFactor ctx x'
-        _ -> typeCheckHighTerm ctx x
-    y' <- typeCheckFactor ctx y
+typeCheck ctx (STimes x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TInt, TInt) -> pure TInt
         _ -> Left $ "Calling multiplication with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
-typeCheckHighTerm ctx (And x y) = do
-    x' <- case x of
-        Factor x' -> typeCheckFactor ctx x'
-        _ -> typeCheckHighTerm ctx x
-    y' <- typeCheckFactor ctx y
+
+typeCheck ctx (SAnd x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TBool, TBool) -> pure TBool
         _ -> Left $ "Calling <and> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
-typeCheckHighTerm ctx (Or x y) = do
-    x' <- case x of
-        Factor x' -> typeCheckFactor ctx x'
-        _ -> typeCheckHighTerm ctx x
-    y' <- typeCheckFactor ctx y
+
+typeCheck ctx (SOr x y) = do
+    x' <- typeCheck ctx x
+    y' <- typeCheck ctx y
     case (x', y') of
         (TBool, TBool) -> pure TBool
         _ -> Left $ "Calling <or> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
 
-typeCheckFactor :: Context -> Factor -> Either String TypeValue
-typeCheckFactor ctx (Brack expr) = typeCheck ctx expr
-typeCheckFactor ctx (Name name) = case Map.lookup name ctx of
+typeCheck ctx (SBrack expr) = typeCheck ctx expr
+typeCheck ctx (SName name) = case Map.lookup name ctx of
     Just t -> Right t
     Nothing -> Left $ "Variable not initialized: " ++ name
-typeCheckFactor _ (Int _) = Right TInt
-typeCheckFactor _ (Bool _) = Right TBool
-typeCheckFactor _ (String _) = Right TString
+typeCheck _ (SInt _) = Right TInt
+typeCheck _ (SBool _) = Right TBool
+typeCheck _ (SString _) = Right TString
 
-typeCheckTypeNote :: Context -> TypeNote -> Either String TypeValue
-typeCheckTypeNote ctx (TypeIntersection l r) = do
-    l' <- typeCheckTypeNote ctx l
-    r' <- typeCheckTypeNote ctx r
+typeCheck ctx (STypeIntersection l r) = do
+    l' <- typeCheck ctx l
+    r' <- typeCheck ctx r
     pure $ TIntersection l' r'
-typeCheckTypeNote ctx (TypeUnion l r) = do
-    l' <- typeCheckTypeNote ctx l
-    r' <- typeCheckTypeNote ctx r
+typeCheck ctx (STypeUnion l r) = do
+    l' <- typeCheck ctx l
+    r' <- typeCheck ctx r
     pure $ TUnion l' r'
-typeCheckTypeNote ctx (Typeof expr) = typeCheck ctx expr
-typeCheckTypeNote _ (Type "Int") = Right TInt
-typeCheckTypeNote _ (Type "String") = Right TString
-typeCheckTypeNote _ (Type "Bool") = Right TBool
-typeCheckTypeNote ctx (Type t) = do
+
+typeCheck ctx (STypeof expr) = typeCheck ctx expr
+typeCheck _ (SType "Int") = Right TInt
+typeCheck _ (SType "String") = Right TString
+typeCheck _ (SType "Bool") = Right TBool
+typeCheck ctx (SType t) = do
     case Map.lookup t ctx of
         Just (TType t') -> Right t'
         Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
         Nothing -> Left $ "Type not implemented: " ++ t
-typeCheckTypeNote ctx (TypeFunc t r) = do
-    t' <- typeCheckTypeNote ctx t
-    r' <- typeCheckTypeNote ctx r
+typeCheck ctx (STypeFunc t r) = do
+    t' <- typeCheck ctx t
+    r' <- typeCheck ctx r
     pure $ TFunction t' r'
+
+typeCheck _ s = error $ "Checking invalid node: " ++ show s

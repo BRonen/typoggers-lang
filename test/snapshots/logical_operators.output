@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-Let "a" (Type "Bool") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool True))))))) (Let "b" (Type "Bool") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Bool False))))))) (LetInfer "c" (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Or (Factor (Name "a")) (Name "b"))))))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Or (Factor (Name "c")) (Bool False)))))))))
+SLet "a" (SType "Bool") (SBool True) (SLet "b" (SType "Bool") (SBool False) (SLetInfer "c" (SOr (SName "a") (SName "b")) (SOr (SName "c") (SBool False))))
 
 type:
 
