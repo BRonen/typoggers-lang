@@ -1,14 +1,41 @@
 module Lexer
-    ( lexer
+    ( Token (..),
+      lexer
     ) where
 
 import Data.Char (isDigit, isSpace)
-import Parser (Token (..))
+
+data Token
+      = TokenLet
+      | TokenType
+      | TokenTypeof
+      | TokenIn
+      | TokenInt Int
+      | TokenBool Bool
+      | TokenString String
+      | TokenLiteral String
+      | TokenQuote
+      | TokenFatArrow
+      | TokenArrow
+      | TokenEq
+      | TokenPlus
+      | TokenMinus
+      | TokenTimes
+      | TokenDiv
+      | TokenOB
+      | TokenCB
+      | TokenColon
+      | TokenOr
+      | TokenAnd
+      | TokenPipe
+      | TokenAmpersand
+      | TokenIf
+      | TokenThen
+      | TokenElse
+      deriving Show
 
 lexer :: String -> [Token]
 lexer ('/':'/':cs) = lexComment cs
-lexer ('T':'r':'u':'e':cs) = TokenBool True : lexer cs
-lexer ('F':'a':'l':'s':'e':cs) = TokenBool False : lexer cs
 lexer ('=':'>':cs) = TokenFatArrow : lexer cs
 lexer ('-':'>':cs) = TokenArrow : lexer cs
 lexer (':':cs) = TokenColon : lexer cs
@@ -45,6 +72,11 @@ lexLiteral cs =
       "type" -> TokenType : lexer rest
       "typeof" -> TokenTypeof : lexer rest
       "in" -> TokenIn : lexer rest
+      "if" -> TokenIf : lexer rest
+      "then" -> TokenThen : lexer rest
+      "else" -> TokenElse : lexer rest
+      "True" -> TokenBool True : lexer rest
+      "False" -> TokenBool False : lexer rest
       _ -> TokenLiteral literal : lexer rest
       where
             (literal, rest) = span (\c -> not $ elem c specialCharacters) cs

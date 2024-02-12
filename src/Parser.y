@@ -2,15 +2,10 @@
 module Parser (
       parse,
       Token (..),
-      Expr (..),
-      TypeDef (..),
-      FuncDef (..),
-      FuncApp (..),
-      LowTerm (..),
-      HighTerm (..),
-      Factor (..),
-      TypeNote (..)
-) where
+      SExpr (..),
+      ) where
+
+import Lexer (Token (..))
 }
 
 %name parse
@@ -28,6 +23,9 @@ module Parser (
       literal         { TokenLiteral $$ }
       fatarrow        { TokenFatArrow }
       arrow           { TokenArrow }
+      if              { TokenIf }
+      then            { TokenThen }
+      else            { TokenElse }
       and             { TokenAnd }
       or              { TokenOr }
       '"'             { TokenQuote }
@@ -44,126 +42,79 @@ module Parser (
 
 %%
 
-Expr         : let literal ':' LowTypeNote '=' Expr in Expr            { Let $2 $4 $6 $8 }
-             | let literal '=' Expr in Expr                            { LetInfer $2 $4 $6 }
-             | TypeDef                                                 { TypeDef $1 }
+Expr         : let literal ':' LowTypeNote '=' Expr in Expr                  { SLet $2 $4 $6 $8 }
+             | let literal '=' Expr in Expr                                  { SLetInfer $2 $4 $6 }
+             | TypeDef                                                       { $1 }
 
-TypeDef      : type literal '=' LowTypeNote in Expr                    { TypeAlias $2 $4 $6 }
-             | FuncDef                                                 { FuncDef $1 }
+TypeDef      : type literal '=' LowTypeNote in Expr                          { STypeAlias $2 $4 $6 }
+             | FuncDef                                                       { $1 }
 
-FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { Def $2 $4 $7 $9 }
-             | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { DefInfer $2 $4 $7 }
-             | FuncApp                                                       { FuncApp $1 }
+FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { SDef $2 $4 $7 $9 }
+             | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { SDefInfer $2 $4 $7 }
+             | Conditional                                                   { $1 }
 
-FuncApp      : literal Expr                                            { App $1 $2 }
-             | LowTerm                                                 { LowTerm $1 }
+Conditional  : if Expr then Expr else Expr                                   { SOr (SAnd $2 $4) $6 }
+             | FuncApp                                                       { $1 }
 
-LowTerm      : LowTerm '+' HighTerm                                    { Plus $1 $3 }
-             | LowTerm '-' HighTerm                                    { Minus $1 $3 }
-             | HighTerm                                                { HighTerm $1 }
+FuncApp      : literal Expr                                                  { SApp (SName $1) $2 }
+             | '(' Expr ')' Expr                                             { SApp $2 $4 }
+             | LowTerm                                                       { $1 }
 
-HighTerm     : HighTerm '*' Factor                                     { Times $1 $3 }
-             | HighTerm '/' Factor                                     { Div $1 $3 }
-             | LogicalTerm                                             { $1 }
+LowTerm      : LowTerm '+' HighTerm                                          { SPlus $1 $3 }
+             | LowTerm '-' HighTerm                                          { SMinus $1 $3 }
+             | HighTerm                                                      { $1 }
 
-LogicalTerm  : LogicalTerm and Factor                                  { And $1 $3 }
-             | LogicalTerm or Factor                                   { Or $1 $3 }
-             | Factor                                                  { Factor $1 }
+HighTerm     : HighTerm '*' LowLogicOp                                       { STimes $1 $3 }
+             | HighTerm '/' LowLogicOp                                       { SDiv $1 $3 }
+             | LowLogicOp                                                    { $1 }
 
-Factor       : '"' string '"'                                          { String $2 }
-             | literal                                                 { Name $1 }
-             | int                                                     { Int $1 }
-             | bool                                                    { Bool $1 }
-             | '(' Expr ')'                                            { Brack $2 }
+LowLogicOp   : LowLogicOp or HighLogicOp                                     { SOr $1 $3 }
+             | HighLogicOp                                                   { $1 }
 
-LowTypeNote  : HighTypeNote arrow LowTypeNote                          { TypeFunc $1 $3 }
-             | HighTypeNote '|' LowTypeNote                            { TypeUnion $1 $3 }
-             | HighTypeNote '&' LowTypeNote                            { TypeIntersection $1 $3 }
-             | HighTypeNote                                            { $1 }
+HighLogicOp  : HighLogicOp and Factor                                        { SAnd $1 $3 }
+             | Factor                                                        { $1 }
 
-HighTypeNote : literal                                                 { Type $1 }
-             | typeof Expr                                             { Typeof $2 }
-             | '(' LowTypeNote ')'                                     { $2 }
+Factor       : '"' string '"'                                                { SString $2 }
+             | literal                                                       { SName $1 }
+             | int                                                           { SInt $1 }
+             | bool                                                          { SBool $1 }
+             | '(' Expr ')'                                                  { SBrack $2 }
+
+LowTypeNote  : HighTypeNote arrow LowTypeNote                                { STypeFunc $1 $3 }
+             | HighTypeNote '|' LowTypeNote                                  { STypeUnion $1 $3 }
+             | HighTypeNote '&' LowTypeNote                                  { STypeIntersection $1 $3 }
+             | HighTypeNote                                                  { $1 }
+
+HighTypeNote : literal                                                       { SType $1 }
+             | typeof Expr                                                   { STypeof $2 }
+             | '(' LowTypeNote ')'                                           { $2 }
 
 {
 parseError :: [Token] -> a
 parseError tokens = error $ "Parse error: " ++ show tokens
 
-data Expr
-      = Let String TypeNote Expr Expr
-      | LetInfer String Expr Expr
-      | TypeDef TypeDef
-      deriving Show
-
-data TypeDef
-      = TypeAlias String TypeNote Expr
-      | FuncDef FuncDef
-      deriving Show
-
-data FuncDef
-      = Def String TypeNote TypeNote Expr
-      | DefInfer String TypeNote Expr
-      | FuncApp FuncApp
-      deriving Show
-
-data FuncApp
-      = App String Expr
-      | LowTerm LowTerm
-      deriving Show
-
-data LowTerm
-      = Plus LowTerm HighTerm
-      | Minus LowTerm HighTerm
-      | HighTerm HighTerm
-      deriving Show
-
-data HighTerm
-      = Times HighTerm Factor
-      | Div HighTerm Factor
-      | And HighTerm Factor
-      | Or HighTerm Factor
-      | Factor Factor
-      deriving Show
-
-data Factor
-      = String String
-      | Int Int
-      | Name String
-      | Bool Bool
-      | Brack Expr
-      deriving Show
-
-data TypeNote
-      = Type String
-      | Typeof Expr
-      | TypeUnion TypeNote TypeNote
-      | TypeIntersection TypeNote TypeNote
-      | TypeFunc TypeNote TypeNote
-      deriving Show
-
-data Token
-      = TokenLet
-      | TokenType
-      | TokenTypeof
-      | TokenIn
-      | TokenInt Int
-      | TokenBool Bool
-      | TokenString String
-      | TokenLiteral String
-      | TokenQuote
-      | TokenFatArrow
-      | TokenArrow
-      | TokenEq
-      | TokenPlus
-      | TokenMinus
-      | TokenTimes
-      | TokenDiv
-      | TokenOB
-      | TokenCB
-      | TokenColon
-      | TokenOr
-      | TokenAnd
-      | TokenPipe
-      | TokenAmpersand
+data SExpr
+      = SLet String SExpr SExpr SExpr
+      | SLetInfer String SExpr SExpr
+      | STypeAlias String SExpr SExpr
+      | SDef String SExpr SExpr SExpr
+      | SDefInfer String SExpr SExpr
+      | SApp SExpr SExpr
+      | SPlus SExpr SExpr
+      | SMinus SExpr SExpr
+      | STimes SExpr SExpr
+      | SDiv SExpr SExpr
+      | SAnd SExpr SExpr
+      | SOr SExpr SExpr
+      | SString String
+      | SInt Int
+      | SName String
+      | SBool Bool
+      | SBrack SExpr
+      | SType String
+      | STypeof SExpr
+      | STypeUnion SExpr SExpr
+      | STypeIntersection SExpr SExpr
+      | STypeFunc SExpr SExpr
       deriving Show
 }

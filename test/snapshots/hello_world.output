@@ -4,7 +4,7 @@ tokens:
 
 ast:
 
-Let "_hello_world" (Type "String") (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (String "Hello world"))))))) (TypeDef (FuncDef (FuncApp (LowTerm (HighTerm (Factor (Name "_hello_world")))))))
+SLet "_hello_world" (SType "String") (SString "Hello world") (SName "_hello_world")
 
 type:
 
