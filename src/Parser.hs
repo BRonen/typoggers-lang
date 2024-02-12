@@ -752,7 +752,7 @@ happyReduction_9 ((HappyAbsSyn4  happy_var_6) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn7
-		 (SOr (SAnd happy_var_2 happy_var_4) happy_var_6
+		 (SConditional happy_var_2 happy_var_4 happy_var_6
 	) `HappyStk` happyRest
 
 happyReduce_10 = happySpecReduce_1  7 happyReduction_10
@@ -1042,6 +1042,7 @@ data SExpr
       | STypeAlias String SExpr SExpr
       | SDef String SExpr SExpr SExpr
       | SDefInfer String SExpr SExpr
+      | SConditional SExpr SExpr SExpr
       | SApp SExpr SExpr
       | SPlus SExpr SExpr
       | SMinus SExpr SExpr

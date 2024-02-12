@@ -53,7 +53,7 @@ FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { S
              | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { SDefInfer $2 $4 $7 }
              | Conditional                                                   { $1 }
 
-Conditional  : if Expr then Expr else Expr                                   { SOr (SAnd $2 $4) $6 }
+Conditional  : if Expr then Expr else Expr                                   { SConditional $2 $4 $6 }
              | FuncApp                                                       { $1 }
 
 FuncApp      : literal Expr                                                  { SApp (SName $1) $2 }
@@ -99,6 +99,7 @@ data SExpr
       | STypeAlias String SExpr SExpr
       | SDef String SExpr SExpr SExpr
       | SDefInfer String SExpr SExpr
+      | SConditional SExpr SExpr SExpr
       | SApp SExpr SExpr
       | SPlus SExpr SExpr
       | SMinus SExpr SExpr

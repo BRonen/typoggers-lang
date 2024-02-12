@@ -67,6 +67,13 @@ typeCheck ctx (SDef param paramT retT body) = do
         then pure $ TFunction paramT' retT'
         else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show bodyT ++ ">"
 
+typeCheck ctx (SConditional _ cthen celse) = do
+    cthenT <- typeCheck ctx cthen
+    celseT <- typeCheck ctx celse
+    if cthenT == celseT
+        then pure cthenT
+        else pure $ TUnion cthenT celseT
+
 typeCheck ctx (SApp func param) = do
     funcT <- typeCheck ctx func
     case funcT of
