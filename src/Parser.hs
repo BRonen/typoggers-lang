@@ -1051,7 +1051,7 @@ data SExpr
       | SAnd SExpr SExpr
       | SOr SExpr SExpr
       | SString String
-      | SInt Int
+      | SInt Integer
       | SName String
       | SBool Bool
       | SBrack SExpr

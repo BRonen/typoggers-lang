@@ -10,7 +10,7 @@ data Token
       | TokenType
       | TokenTypeof
       | TokenIn
-      | TokenInt Int
+      | TokenInt Integer
       | TokenBool Bool
       | TokenString String
       | TokenLiteral String
