@@ -23,6 +23,9 @@ import Lexer (Token (..))
       literal         { TokenLiteral $$ }
       fatarrow        { TokenFatArrow }
       arrow           { TokenArrow }
+      if              { TokenIf }
+      then            { TokenThen }
+      else            { TokenElse }
       and             { TokenAnd }
       or              { TokenOr }
       '"'             { TokenQuote }
@@ -48,6 +51,9 @@ TypeDef      : type literal '=' LowTypeNote in Expr                          { S
 
 FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { SDef $2 $4 $7 $9 }
              | '(' literal ':' LowTypeNote ')' fatarrow Expr                 { SDefInfer $2 $4 $7 }
+             | Conditional                                                   { $1 }
+
+Conditional  : if Expr then Expr else Expr                                   { SOr (SAnd $2 $4) $6 }
              | FuncApp                                                       { $1 }
 
 FuncApp      : literal Expr                                                  { SApp (SName $1) $2 }

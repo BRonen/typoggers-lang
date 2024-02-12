@@ -106,16 +106,16 @@ typeCheck ctx (STimes x y) = do
 typeCheck ctx (SAnd x y) = do
     x' <- typeCheck ctx x
     y' <- typeCheck ctx y
-    case (x', y') of
-        (TBool, TBool) -> pure TBool
-        _ -> Left $ "Calling <and> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+    if x' == y'
+        then pure x'
+        else pure $ TUnion x' y'
 
 typeCheck ctx (SOr x y) = do
     x' <- typeCheck ctx x
     y' <- typeCheck ctx y
-    case (x', y') of
-        (TBool, TBool) -> pure TBool
-        _ -> Left $ "Calling <or> with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+    if x' == y'
+        then pure x'
+        else pure $ TUnion x' y'
 
 typeCheck ctx (SBrack expr) = typeCheck ctx expr
 typeCheck ctx (SName name) = case Map.lookup name ctx of
