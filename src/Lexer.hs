@@ -30,6 +30,7 @@ data Token
       | TokenPipe
       | TokenAmpersand
       | TokenIf
+      | TokenThen
       | TokenElse
       deriving Show
 
@@ -72,6 +73,7 @@ lexLiteral cs =
       "typeof" -> TokenTypeof : lexer rest
       "in" -> TokenIn : lexer rest
       "if" -> TokenIf : lexer rest
+      "then" -> TokenThen : lexer rest
       "else" -> TokenElse : lexer rest
       "True" -> TokenBool True : lexer rest
       "False" -> TokenBool False : lexer rest
