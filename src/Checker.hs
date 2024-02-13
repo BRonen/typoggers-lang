@@ -18,9 +18,9 @@ data TypeValue
 instance Eq TypeValue where
     received == expected = case (received, expected) of
         (TIntersection left right, _)                   -> left == expected || right == expected
-        (TUnion left right, _)                          -> left == expected || right == expected
+        (TUnion left right, _)                          -> left == expected && right == expected
         (_, TIntersection left right)                   -> received == left && received == right
-        (_, TUnion left right)                          -> received == left && received == right
+        (_, TUnion left right)                          -> received == left || received == right
         (TFunction param ret, TFunction param' ret')    -> param == param' && ret == ret'
         (TType received', TType expected')              -> received' == expected'
         (TString, TString)                              -> True
