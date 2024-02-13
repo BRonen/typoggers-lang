@@ -1,284 +1,356 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Lexer</span><span>
-</span><span id="line-2"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier">lexer</span></a></span><span>
-</span><span id="line-3"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-4"></span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isDigit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">isSpace</span></span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parser.html"><span class="hs-identifier">Parser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier">Token</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-2"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier">Token</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>      </span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier">lexer</span></a></span><span>
+</span><span id="line-4"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isDigit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">isSpace</span></span><span class="hs-special">)</span><span>
 </span><span id="line-7"></span><span>
-</span><span id="line-8"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-type">lexer</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-9"></span><span id="lexer"><span class="annot"><span class="annottext">lexer :: String -&gt; [Token]
+</span><span id="line-8"></span><span class="hs-keyword">data</span><span> </span><span id="Token"><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-var">Token</span></a></span></span><span>
+</span><span id="line-9"></span><span>      </span><span class="hs-glyph">=</span><span> </span><span id="TokenLet"><span class="annot"><a href="Lexer.html#TokenLet"><span class="hs-identifier hs-var">TokenLet</span></a></span></span><span>
+</span><span id="line-10"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenType"><span class="annot"><a href="Lexer.html#TokenType"><span class="hs-identifier hs-var">TokenType</span></a></span></span><span>
+</span><span id="line-11"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenTypeof"><span class="annot"><a href="Lexer.html#TokenTypeof"><span class="hs-identifier hs-var">TokenTypeof</span></a></span></span><span>
+</span><span id="line-12"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenIn"><span class="annot"><a href="Lexer.html#TokenIn"><span class="hs-identifier hs-var">TokenIn</span></a></span></span><span>
+</span><span id="line-13"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenInt"><span class="annot"><a href="Lexer.html#TokenInt"><span class="hs-identifier hs-var">TokenInt</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-14"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenBool"><span class="annot"><a href="Lexer.html#TokenBool"><span class="hs-identifier hs-var">TokenBool</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-15"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenString"><span class="annot"><a href="Lexer.html#TokenString"><span class="hs-identifier hs-var">TokenString</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-16"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenLiteral"><span class="annot"><a href="Lexer.html#TokenLiteral"><span class="hs-identifier hs-var">TokenLiteral</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-17"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenQuote"><span class="annot"><a href="Lexer.html#TokenQuote"><span class="hs-identifier hs-var">TokenQuote</span></a></span></span><span>
+</span><span id="line-18"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenFatArrow"><span class="annot"><a href="Lexer.html#TokenFatArrow"><span class="hs-identifier hs-var">TokenFatArrow</span></a></span></span><span>
+</span><span id="line-19"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenArrow"><span class="annot"><a href="Lexer.html#TokenArrow"><span class="hs-identifier hs-var">TokenArrow</span></a></span></span><span>
+</span><span id="line-20"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenEq"><span class="annot"><a href="Lexer.html#TokenEq"><span class="hs-identifier hs-var">TokenEq</span></a></span></span><span>
+</span><span id="line-21"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenPlus"><span class="annot"><a href="Lexer.html#TokenPlus"><span class="hs-identifier hs-var">TokenPlus</span></a></span></span><span>
+</span><span id="line-22"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenMinus"><span class="annot"><a href="Lexer.html#TokenMinus"><span class="hs-identifier hs-var">TokenMinus</span></a></span></span><span>
+</span><span id="line-23"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenTimes"><span class="annot"><a href="Lexer.html#TokenTimes"><span class="hs-identifier hs-var">TokenTimes</span></a></span></span><span>
+</span><span id="line-24"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenDiv"><span class="annot"><a href="Lexer.html#TokenDiv"><span class="hs-identifier hs-var">TokenDiv</span></a></span></span><span>
+</span><span id="line-25"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenOB"><span class="annot"><a href="Lexer.html#TokenOB"><span class="hs-identifier hs-var">TokenOB</span></a></span></span><span>
+</span><span id="line-26"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenCB"><span class="annot"><a href="Lexer.html#TokenCB"><span class="hs-identifier hs-var">TokenCB</span></a></span></span><span>
+</span><span id="line-27"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenColon"><span class="annot"><a href="Lexer.html#TokenColon"><span class="hs-identifier hs-var">TokenColon</span></a></span></span><span>
+</span><span id="line-28"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenOr"><span class="annot"><a href="Lexer.html#TokenOr"><span class="hs-identifier hs-var">TokenOr</span></a></span></span><span>
+</span><span id="line-29"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenAnd"><span class="annot"><a href="Lexer.html#TokenAnd"><span class="hs-identifier hs-var">TokenAnd</span></a></span></span><span>
+</span><span id="line-30"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenPipe"><span class="annot"><a href="Lexer.html#TokenPipe"><span class="hs-identifier hs-var">TokenPipe</span></a></span></span><span>
+</span><span id="line-31"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenAmpersand"><span class="annot"><a href="Lexer.html#TokenAmpersand"><span class="hs-identifier hs-var">TokenAmpersand</span></a></span></span><span>
+</span><span id="line-32"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenIf"><span class="annot"><a href="Lexer.html#TokenIf"><span class="hs-identifier hs-var">TokenIf</span></a></span></span><span>
+</span><span id="line-33"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenThen"><span class="annot"><a href="Lexer.html#TokenThen"><span class="hs-identifier hs-var">TokenThen</span></a></span></span><span>
+</span><span id="line-34"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="TokenElse"><span class="annot"><a href="Lexer.html#TokenElse"><span class="hs-identifier hs-var">TokenElse</span></a></span></span><span>
+</span><span id="line-35"></span><span>      </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679051758"><span id="local-6989586621679051773"><span id="local-6989586621679051777"><span class="annot"><span class="annottext">Int -&gt; Token -&gt; ShowS
+[Token] -&gt; ShowS
+Token -&gt; String
+(Int -&gt; Token -&gt; ShowS)
+-&gt; (Token -&gt; String) -&gt; ([Token] -&gt; ShowS) -&gt; Show Token
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Token -&gt; ShowS
+showsPrec :: Int -&gt; Token -&gt; ShowS
+$cshow :: Token -&gt; String
+show :: Token -&gt; String
+$cshowList :: [Token] -&gt; ShowS
+showList :: [Token] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-type">lexer</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-38"></span><span id="lexer"><span class="annot"><span class="annottext">lexer :: String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var hs-var">lexer</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'/'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'/'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058187"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058187"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><span class="hs-char">'/'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051781"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051781"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexComment"><span class="hs-identifier hs-var">lexComment</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058187"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-10"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'T'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'r'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'u'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'e'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058189"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058189"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Token
-</span><a href="Parser.html#TokenBool"><span class="hs-identifier hs-var">TokenBool</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
-forall a. a -&gt; [a] -&gt; [a]
-</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
-</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058189"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-11"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'F'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'a'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'l'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'s'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'e'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058191"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058191"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Token
-</span><a href="Parser.html#TokenBool"><span class="hs-identifier hs-var">TokenBool</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
-forall a. a -&gt; [a] -&gt; [a]
-</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
-</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058191"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-12"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051781"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-39"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'='</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'&gt;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058192"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058192"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenFatArrow"><span class="hs-identifier hs-var">TokenFatArrow</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><span class="hs-char">'&gt;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051783"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051783"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenFatArrow"><span class="hs-identifier hs-var">TokenFatArrow</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058192"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-13"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051783"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-40"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'-'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'&gt;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058194"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058194"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenArrow"><span class="hs-identifier hs-var">TokenArrow</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><span class="hs-char">'&gt;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051784"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051784"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenArrow"><span class="hs-identifier hs-var">TokenArrow</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058194"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-14"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">':'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058196"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058196"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenColon"><span class="hs-identifier hs-var">TokenColon</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051784"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-41"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">':'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051785"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051785"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenColon"><span class="hs-identifier hs-var">TokenColon</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058196"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-15"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'&quot;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058198"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058198"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenQuote"><span class="hs-identifier hs-var">TokenQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051785"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-42"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&quot;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051786"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051786"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenQuote"><span class="hs-identifier hs-var">TokenQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexStr"><span class="hs-identifier hs-var">lexStr</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058198"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-16"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'='</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058201"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058201"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenEq"><span class="hs-identifier hs-var">TokenEq</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051786"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'='</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051788"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051788"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenEq"><span class="hs-identifier hs-var">TokenEq</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058201"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-17"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'+'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058203"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058203"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenPlus"><span class="hs-identifier hs-var">TokenPlus</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051788"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'+'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051789"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051789"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenPlus"><span class="hs-identifier hs-var">TokenPlus</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058203"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-18"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'-'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058205"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058205"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenMinus"><span class="hs-identifier hs-var">TokenMinus</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051789"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-45"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'-'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051790"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051790"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenMinus"><span class="hs-identifier hs-var">TokenMinus</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058205"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-19"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'*'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058207"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058207"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenTimes"><span class="hs-identifier hs-var">TokenTimes</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051790"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'*'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051791"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051791"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenTimes"><span class="hs-identifier hs-var">TokenTimes</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058207"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-20"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'/'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058209"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058209"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenDiv"><span class="hs-identifier hs-var">TokenDiv</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051791"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'/'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051792"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051792"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenDiv"><span class="hs-identifier hs-var">TokenDiv</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058209"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-21"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'('</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058211"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058211"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenOB"><span class="hs-identifier hs-var">TokenOB</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051792"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-48"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'('</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051793"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051793"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenOB"><span class="hs-identifier hs-var">TokenOB</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058211"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-22"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">')'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058213"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058213"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenCB"><span class="hs-identifier hs-var">TokenCB</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051793"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-49"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">')'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051794"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051794"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenCB"><span class="hs-identifier hs-var">TokenCB</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058213"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-23"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'|'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058215"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058215"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenPipe"><span class="hs-identifier hs-var">TokenPipe</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051794"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'|'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'|'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051795"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051795"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenOr"><span class="hs-identifier hs-var">TokenOr</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058215"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-24"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><span class="hs-char">'&amp;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058217"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058217"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenAmpersand"><span class="hs-identifier hs-var">TokenAmpersand</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051795"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-51"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'|'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051796"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051796"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenPipe"><span class="hs-identifier hs-var">TokenPipe</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058217"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-25"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058219"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var">c</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679058220"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058220"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><a href="#local-6989586621679051796"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-52"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&amp;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&amp;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051797"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051797"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenAnd"><span class="hs-identifier hs-var">TokenAnd</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051797"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&amp;'</span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051798"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051798"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenAmpersand"><span class="hs-identifier hs-var">TokenAmpersand</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051798"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679051799"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051799"><span class="hs-identifier hs-var">c</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679051800"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051800"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isSpace</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="#local-6989586621679051799"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058220"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-27"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><a href="#local-6989586621679051800"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-56"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="#local-6989586621679051799"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexNum"><span class="hs-identifier hs-var">lexNum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+</span><a href="#local-6989586621679051799"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058220"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-28"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679051800"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexLiteral"><span class="hs-identifier hs-var">lexLiteral</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Char -&gt; String -&gt; String
+</span><a href="#local-6989586621679051799"><span class="hs-identifier hs-var">c</span></a></span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058220"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-29"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051800"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span class="annot"><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span class="annot"><a href="Lexer.html#lexNum"><span class="hs-identifier hs-type">lexNum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-32"></span><span id="lexNum"><span class="annot"><span class="annottext">lexNum :: String -&gt; [Token]
-</span><a href="Lexer.html#lexNum"><span class="hs-identifier hs-var hs-var">lexNum</span></a></span></span><span> </span><span id="local-6989586621679058223"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058223"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Token
-</span><a href="Parser.html#TokenInt"><span class="hs-identifier hs-var">TokenInt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Int
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="annot"><a href="Lexer.html#lexNum"><span class="hs-identifier hs-type">lexNum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-61"></span><span id="lexNum"><span class="annot"><span class="annottext">lexNum :: String -&gt; [Token]
+</span><a href="Lexer.html#lexNum"><span class="hs-identifier hs-var hs-var">lexNum</span></a></span></span><span> </span><span id="local-6989586621679051803"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051803"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Token
+</span><a href="Lexer.html#TokenInt"><span class="hs-identifier hs-var">TokenInt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Integer
 forall a. Read a =&gt; String -&gt; a
 </span><span class="hs-identifier hs-var">read</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058226"><span class="hs-identifier hs-var">num</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051805"><span class="hs-identifier hs-var">num</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058227"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-33"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058226"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058226"><span class="hs-identifier hs-var">num</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058227"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058227"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
+</span><a href="#local-6989586621679051806"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-62"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679051805"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051805"><span class="hs-identifier hs-var">num</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679051806"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051806"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])
 </span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058223"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span class="annot"><a href="Lexer.html#lexStr"><span class="hs-identifier hs-type">lexStr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-36"></span><span id="lexStr"><span class="annot"><span class="annottext">lexStr :: String -&gt; [Token]
-</span><a href="Lexer.html#lexStr"><span class="hs-identifier hs-var hs-var">lexStr</span></a></span></span><span> </span><span id="local-6989586621679058229"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058229"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Token
-</span><a href="Parser.html#TokenString"><span class="hs-identifier hs-var">TokenString</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058231"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="#local-6989586621679051803"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="annot"><a href="Lexer.html#lexStr"><span class="hs-identifier hs-type">lexStr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-65"></span><span id="lexStr"><span class="annot"><span class="annottext">lexStr :: String -&gt; [Token]
+</span><a href="Lexer.html#lexStr"><span class="hs-identifier hs-var hs-var">lexStr</span></a></span></span><span> </span><span id="local-6989586621679051808"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051808"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Token
+</span><a href="Lexer.html#TokenString"><span class="hs-identifier hs-var">TokenString</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051809"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenQuote"><span class="hs-identifier hs-var">TokenQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenQuote"><span class="hs-identifier hs-var">TokenQuote</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; [Token]) -&gt; String -&gt; [Token]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ShowS
 forall a. HasCallStack =&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">tail</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058233"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058231"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058231"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058233"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058233"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
+</span><a href="#local-6989586621679051811"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679051809"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051809"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679051811"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051811"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])
-</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679058236"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058236"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058236"><span class="hs-identifier hs-var">c'</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
+</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679051814"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051814"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051814"><span class="hs-identifier hs-var">c'</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'&quot;'</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058229"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="annot"><a href="Lexer.html#lexLiteral"><span class="hs-identifier hs-type">lexLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-40"></span><span id="lexLiteral"><span class="annot"><span class="annottext">lexLiteral :: String -&gt; [Token]
-</span><a href="Lexer.html#lexLiteral"><span class="hs-identifier hs-var hs-var">lexLiteral</span></a></span></span><span> </span><span id="local-6989586621679058238"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058238"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-41"></span><span>   </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058239"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-42"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051808"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Lexer.html#lexLiteral"><span class="hs-identifier hs-type">lexLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-69"></span><span id="lexLiteral"><span class="annot"><span class="annottext">lexLiteral :: String -&gt; [Token]
+</span><a href="Lexer.html#lexLiteral"><span class="hs-identifier hs-var hs-var">lexLiteral</span></a></span></span><span> </span><span id="local-6989586621679051816"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051816"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-70"></span><span>   </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051817"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;let&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenLet"><span class="hs-identifier hs-var">TokenLet</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenLet"><span class="hs-identifier hs-var">TokenLet</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-43"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-72"></span><span>      </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;type&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenType"><span class="hs-identifier hs-var">TokenType</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenType"><span class="hs-identifier hs-var">TokenType</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-44"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-73"></span><span>      </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;typeof&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenTypeof"><span class="hs-identifier hs-var">TokenTypeof</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenTypeof"><span class="hs-identifier hs-var">TokenTypeof</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-45"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-74"></span><span>      </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;in&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
-</span><a href="Parser.html#TokenIn"><span class="hs-identifier hs-var">TokenIn</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenIn"><span class="hs-identifier hs-var">TokenIn</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-46"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-75"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;if&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenIf"><span class="hs-identifier hs-var">TokenIf</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-76"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;then&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenThen"><span class="hs-identifier hs-var">TokenThen</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-77"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;else&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Token
+</span><a href="Lexer.html#TokenElse"><span class="hs-identifier hs-var">TokenElse</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-78"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;True&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Token
+</span><a href="Lexer.html#TokenBool"><span class="hs-identifier hs-var">TokenBool</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-79"></span><span>      </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;False&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Token
+</span><a href="Lexer.html#TokenBool"><span class="hs-identifier hs-var">TokenBool</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-80"></span><span>      </span><span class="annot"><span class="annottext">String
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Token
-</span><a href="Parser.html#TokenLiteral"><span class="hs-identifier hs-var">TokenLiteral</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058239"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
+</span><a href="Lexer.html#TokenLiteral"><span class="hs-identifier hs-var">TokenLiteral</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051817"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="annot"><span class="annottext">Token -&gt; [Token] -&gt; [Token]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-47"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-48"></span><span>            </span><span class="hs-special">(</span><span id="local-6989586621679058239"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058239"><span class="hs-identifier hs-var">literal</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058241"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058241"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-81"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>            </span><span class="hs-special">(</span><span id="local-6989586621679051817"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051817"><span class="hs-identifier hs-var">literal</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679051818"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051818"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])
-</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679058249"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058249"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679051822"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051822"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
 </span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Bool -&gt; Bool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; String -&gt; Bool
 forall a. Eq a =&gt; a -&gt; [a] -&gt; Bool
 forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">elem</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058249"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058252"><span class="hs-identifier hs-var">specialCharacters</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058238"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-49"></span><span>            </span><span id="local-6989586621679058252"><span class="annot"><span class="annottext">specialCharacters :: String
-</span><a href="#local-6989586621679058252"><span class="hs-identifier hs-var hs-var">specialCharacters</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051822"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051825"><span class="hs-identifier hs-var">specialCharacters</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051816"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-83"></span><span>            </span><span id="local-6989586621679051825"><span class="annot"><span class="annottext">specialCharacters :: String
+</span><a href="#local-6989586621679051825"><span class="hs-identifier hs-var hs-var">specialCharacters</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">':'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">' '</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'\n'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
@@ -292,22 +364,22 @@ forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
 </span><span class="hs-char">'&quot;'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'|'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'&amp;'</span></span><span class="hs-special">]</span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><a href="Lexer.html#lexComment"><span class="hs-identifier hs-type">lexComment</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Parser.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-52"></span><span id="lexComment"><span class="annot"><span class="annottext">lexComment :: String -&gt; [Token]
-</span><a href="Lexer.html#lexComment"><span class="hs-identifier hs-var hs-var">lexComment</span></a></span></span><span> </span><span id="local-6989586621679058253"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058253"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="annot"><a href="Lexer.html#lexComment"><span class="hs-identifier hs-type">lexComment</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Lexer.html#Token"><span class="hs-identifier hs-type">Token</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-86"></span><span id="lexComment"><span class="annot"><span class="annottext">lexComment :: String -&gt; [Token]
+</span><a href="Lexer.html#lexComment"><span class="hs-identifier hs-var hs-var">lexComment</span></a></span></span><span> </span><span id="local-6989586621679051826"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051826"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Token]
 </span><a href="Lexer.html#lexer"><span class="hs-identifier hs-var">lexer</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058254"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-53"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058254"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058254"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
+</span><a href="#local-6989586621679051827"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-87"></span><span>      </span><span class="hs-keyword">where</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679051827"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679051827"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
 forall a. (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])
-</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679058256"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058256"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679058256"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
+</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679051829"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051829"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679051829"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'\n'</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679058253"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-54"></span></pre></body></html>
+</span><a href="#local-6989586621679051826"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-88"></span></pre></body></html>

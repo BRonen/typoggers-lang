@@ -7,14 +7,13 @@
 @package typoggers-lang
 @version 0.1.0.0
 
-module Parser
-parse :: [Token] -> Expr
+module Lexer
 data Token
 TokenLet :: Token
 TokenType :: Token
 TokenTypeof :: Token
 TokenIn :: Token
-TokenInt :: Int -> Token
+TokenInt :: Integer -> Token
 TokenBool :: Bool -> Token
 TokenString :: String -> Token
 TokenLiteral :: String -> Token
@@ -29,63 +28,80 @@ TokenDiv :: Token
 TokenOB :: Token
 TokenCB :: Token
 TokenColon :: Token
+TokenOr :: Token
+TokenAnd :: Token
 TokenPipe :: Token
 TokenAmpersand :: Token
-data Expr
-Let :: String -> TypeNote -> Expr -> Expr -> Expr
-LetInfer :: String -> Expr -> Expr -> Expr
-TypeDef :: TypeDef -> Expr
-data TypeDef
-TypeAlias :: String -> TypeNote -> Expr -> TypeDef
-FuncDef :: FuncDef -> TypeDef
-data FuncDef
-Def :: String -> TypeNote -> TypeNote -> Expr -> FuncDef
-DefInfer :: String -> TypeNote -> Expr -> FuncDef
-FuncApp :: FuncApp -> FuncDef
-data FuncApp
-App :: String -> Expr -> FuncApp
-LowTerm :: LowTerm -> FuncApp
-data LowTerm
-Plus :: LowTerm -> HighTerm -> LowTerm
-Minus :: LowTerm -> HighTerm -> LowTerm
-HighTerm :: HighTerm -> LowTerm
-data HighTerm
-Times :: HighTerm -> Factor -> HighTerm
-Div :: HighTerm -> Factor -> HighTerm
-Factor :: Factor -> HighTerm
-data Factor
-String :: String -> Factor
-Int :: Int -> Factor
-Name :: String -> Factor
-Bool :: Bool -> Factor
-Brack :: Expr -> Factor
-data TypeNote
-Type :: String -> TypeNote
-Typeof :: Expr -> TypeNote
-TypeUnion :: TypeNote -> TypeNote -> TypeNote
-TypeIntersection :: TypeNote -> TypeNote -> TypeNote
-TypeFunc :: TypeNote -> TypeNote -> TypeNote
-instance GHC.Show.Show Parser.Factor
-instance GHC.Show.Show Parser.HighTerm
-instance GHC.Show.Show Parser.LowTerm
-instance GHC.Show.Show Parser.FuncApp
-instance GHC.Show.Show Parser.FuncDef
-instance GHC.Show.Show Parser.TypeDef
-instance GHC.Show.Show Parser.Expr
-instance GHC.Show.Show Parser.TypeNote
-instance GHC.Show.Show Parser.Token
+TokenIf :: Token
+TokenThen :: Token
+TokenElse :: Token
+lexer :: String -> [Token]
+instance GHC.Show.Show Lexer.Token
+
+module Parser
+parse :: [Token] -> SExpr
+data Token
+TokenLet :: Token
+TokenType :: Token
+TokenTypeof :: Token
+TokenIn :: Token
+TokenInt :: Integer -> Token
+TokenBool :: Bool -> Token
+TokenString :: String -> Token
+TokenLiteral :: String -> Token
+TokenQuote :: Token
+TokenFatArrow :: Token
+TokenArrow :: Token
+TokenEq :: Token
+TokenPlus :: Token
+TokenMinus :: Token
+TokenTimes :: Token
+TokenDiv :: Token
+TokenOB :: Token
+TokenCB :: Token
+TokenColon :: Token
+TokenOr :: Token
+TokenAnd :: Token
+TokenPipe :: Token
+TokenAmpersand :: Token
+TokenIf :: Token
+TokenThen :: Token
+TokenElse :: Token
+data SExpr
+SLet :: String -> SExpr -> SExpr -> SExpr -> SExpr
+SLetInfer :: String -> SExpr -> SExpr -> SExpr
+STypeAlias :: String -> SExpr -> SExpr -> SExpr
+SDef :: String -> SExpr -> SExpr -> SExpr -> SExpr
+SDefInfer :: String -> SExpr -> SExpr -> SExpr
+SConditional :: SExpr -> SExpr -> SExpr -> SExpr
+SApp :: SExpr -> SExpr -> SExpr
+SPlus :: SExpr -> SExpr -> SExpr
+SMinus :: SExpr -> SExpr -> SExpr
+STimes :: SExpr -> SExpr -> SExpr
+SDiv :: SExpr -> SExpr -> SExpr
+SAnd :: SExpr -> SExpr -> SExpr
+SOr :: SExpr -> SExpr -> SExpr
+SString :: String -> SExpr
+SInt :: Integer -> SExpr
+SName :: String -> SExpr
+SBool :: Bool -> SExpr
+SBrack :: SExpr -> SExpr
+SType :: String -> SExpr
+STypeof :: SExpr -> SExpr
+STypeUnion :: SExpr -> SExpr -> SExpr
+STypeIntersection :: SExpr -> SExpr -> SExpr
+STypeFunc :: SExpr -> SExpr -> SExpr
+instance GHC.Show.Show Parser.SExpr
 instance GHC.Base.Functor Parser.HappyIdentity
 instance GHC.Base.Applicative Parser.HappyIdentity
 instance GHC.Base.Monad Parser.HappyIdentity
 
-module Lexer
-lexer :: String -> [Token]
-
 module Checker
 data TypeValue
-checker :: Expr -> Either String TypeValue
+checker :: SExpr -> Either String TypeValue
 instance GHC.Show.Show Checker.TypeValue
 instance GHC.Classes.Eq Checker.TypeValue
 
 module Backend.Eval
-eval :: Expr -> IO ()
+eval :: SExpr -> IO (Either String Value)
+instance GHC.Show.Show Backend.Eval.Value
