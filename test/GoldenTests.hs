@@ -1,15 +1,13 @@
 module GoldenTests (tests) where
 
+import Checker (checker)
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.UTF8 as BLU
-
+import Lexer (lexer)
+import Parser (parse)
 import System.FilePath (replaceExtension, takeBaseName)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (findByExtension, goldenVsString)
-
-import Lexer (lexer)
-import Parser (parse)
-import Checker (checker)
 
 tests :: IO TestTree
 tests = do
@@ -28,10 +26,14 @@ genGoldenTest pogFile =
 
 generateOutput :: BL.ByteString -> IO BL.ByteString
 generateOutput contentPog = do
-  pure $ BLU.fromString $ concat [lexerResult,
-                                  parserResult,
-                                  typecheckResult,
-                                  "\n"]
+  pure $
+    BLU.fromString $
+      concat
+        [ lexerResult,
+          parserResult,
+          typecheckResult,
+          "\n"
+        ]
   where
     typecheckResult = case typecheck of
       Right typecheck' -> "\n\ntype:\n\n" ++ show typecheck'

@@ -1,9 +1,10 @@
 {-# OPTIONS_GHC -w #-}
-module Parser (
-      parse,
-      Token (..),
-      SExpr (..),
-      ) where
+module Parser
+  ( parse,
+    Token (..),
+    SExpr (..),
+  )
+where
 
 import Lexer (Token (..))
 import qualified Data.Array as Happy_Data_Array
@@ -1037,30 +1038,30 @@ parseError :: [Token] -> a
 parseError tokens = error $ "Parse error: " ++ show tokens
 
 data SExpr
-      = SLet String SExpr SExpr SExpr
-      | SLetInfer String SExpr SExpr
-      | STypeAlias String SExpr SExpr
-      | SDef String SExpr SExpr SExpr
-      | SDefInfer String SExpr SExpr
-      | SConditional SExpr SExpr SExpr
-      | SApp SExpr SExpr
-      | SPlus SExpr SExpr
-      | SMinus SExpr SExpr
-      | STimes SExpr SExpr
-      | SDiv SExpr SExpr
-      | SAnd SExpr SExpr
-      | SOr SExpr SExpr
-      | SString String
-      | SInt Integer
-      | SName String
-      | SBool Bool
-      | SBrack SExpr
-      | SType String
-      | STypeof SExpr
-      | STypeUnion SExpr SExpr
-      | STypeIntersection SExpr SExpr
-      | STypeFunc SExpr SExpr
-      deriving Show
+  = SLet String SExpr SExpr SExpr
+  | SLetInfer String SExpr SExpr
+  | STypeAlias String SExpr SExpr
+  | SDef String SExpr SExpr SExpr
+  | SDefInfer String SExpr SExpr
+  | SConditional SExpr SExpr SExpr
+  | SApp SExpr SExpr
+  | SPlus SExpr SExpr
+  | SMinus SExpr SExpr
+  | STimes SExpr SExpr
+  | SDiv SExpr SExpr
+  | SAnd SExpr SExpr
+  | SOr SExpr SExpr
+  | SString String
+  | SInt Integer
+  | SName String
+  | SBool Bool
+  | SBrack SExpr
+  | SType String
+  | STypeof SExpr
+  | STypeUnion SExpr SExpr
+  | STypeIntersection SExpr SExpr
+  | STypeFunc SExpr SExpr
+  deriving (Show)
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- $Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp $
 
