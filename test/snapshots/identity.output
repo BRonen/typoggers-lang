@@ -1,11 +1,11 @@
 tokens:
 
-[TokenType,TokenLiteral "Id",TokenEq,TokenOB,TokenLiteral "String",TokenArrow,TokenLiteral "String",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Int",TokenArrow,TokenLiteral "Int",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Bool",TokenArrow,TokenLiteral "Bool",TokenCB,TokenIn,TokenLet,TokenLiteral "id",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "String",TokenPipe,TokenLiteral "Int",TokenPipe,TokenLiteral "Bool",TokenCB,TokenFatArrow,TokenLiteral "x",TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenQuote,TokenString "hello world",TokenQuote,TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenBool True,TokenIn,TokenLiteral "id",TokenInt 1]
+[TokenType,TokenLiteral "Id",TokenEq,TokenOB,TokenLiteral "String",TokenArrow,TokenLiteral "String",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Int",TokenArrow,TokenLiteral "Int",TokenCB,TokenAmpersand,TokenOB,TokenLiteral "Bool",TokenArrow,TokenLiteral "Bool",TokenCB,TokenIn,TokenLet,TokenLiteral "id",TokenColon,TokenLiteral "Id",TokenEq,TokenOB,TokenLiteral "x",TokenColon,TokenLiteral "String",TokenPipe,TokenLiteral "Bool",TokenPipe,TokenLiteral "Int",TokenCB,TokenFatArrow,TokenLiteral "x",TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenQuote,TokenString "hello world",TokenQuote,TokenIn,TokenLet,TokenLiteral "_",TokenEq,TokenLiteral "id",TokenBool True,TokenIn,TokenLiteral "id",TokenInt 1]
 
 ast:
 
-STypeAlias "Id" (STypeIntersection (STypeFunc (SType "String") (SType "String")) (STypeIntersection (STypeFunc (SType "Int") (SType "Int")) (STypeFunc (SType "Bool") (SType "Bool")))) (SLetInfer "id" (SDefInfer "x" (STypeUnion (SType "String") (STypeUnion (SType "Int") (SType "Bool"))) (SName "x")) (SLetInfer "_" (SApp (SName "id") (SString "hello world")) (SLetInfer "_" (SApp (SName "id") (SBool True)) (SApp (SName "id") (SInt 1)))))
+STypeAlias "Id" (STypeIntersection (STypeFunc (SType "String") (SType "String")) (STypeIntersection (STypeFunc (SType "Int") (SType "Int")) (STypeFunc (SType "Bool") (SType "Bool")))) (SLet "id" (SType "Id") (SDefInfer "x" (STypeUnion (SType "String") (STypeUnion (SType "Bool") (SType "Int"))) (SName "x")) (SLetInfer "_" (SApp (SName "id") (SString "hello world")) (SLetInfer "_" (SApp (SName "id") (SBool True)) (SApp (SName "id") (SInt 1)))))
 
-type:
+check err:
 
-TUnion TString (TUnion TInt TBool)
+"Var<id> of type <TIntersection (TFunction TString TString) (TIntersection (TFunction TInt TInt) (TFunction TBool TBool))> trying to be assigned with <TFunction (TUnion TString (TUnion TBool TInt)) (TUnion TString (TUnion TBool TInt))>"
