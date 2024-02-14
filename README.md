@@ -1,9 +1,5 @@
 # typoggers-lang
 
-WIP
-
-## Examples
-
 Variable Assignment
 
 ```haskell
@@ -52,9 +48,11 @@ apply double
 Unions and intersections
 
 ```haskell
-type Id = (String -> String) & (Int -> Int) & (Bool -> Bool) in
-let id: Id = (x: String | Int | Bool) => x in
-id
+type Any = (String | Int | Bool) & (String | Int | Bool) in
+let i: Any = "hello world" in
+let j: Any = 1234 in
+let k: Any = True in
+0
 ```
 
 Logical operators
