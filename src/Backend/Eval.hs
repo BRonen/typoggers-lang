@@ -11,6 +11,7 @@ data Value
   | Boolean Bool
   | Var String
   | Func Context String SExpr
+  | FuncGen Value
   deriving (Show)
 
 type Context = Map String Value
@@ -34,6 +35,11 @@ evaluate ctx (SLet name _ value next) = do
       evaluate ctx' next
     Left err -> pure $ Left err
 evaluate ctx (STypeAlias _ _ next) = evaluate ctx next
+evaluate ctx (SDefGeneric _ body) = do
+  body' <- evaluate ctx body
+  case body' of
+    Right body'' -> pure $ Right $ FuncGen body''
+    Left _ -> pure body'
 evaluate ctx (SDefInfer param _ body) = pure $ Right $ Func ctx param body
 evaluate ctx (SDef param _ _ body) = pure $ Right $ Func ctx param body
 evaluate ctx (SConditional condition cthen celse) = do
@@ -47,6 +53,7 @@ evaluate ctx (SConditional condition cthen celse) = do
 evaluate ctx (SApp func arg) = do
   func' <- evaluate ctx func
   case func' of
+    Right (FuncGen body) -> pure $ Right body
     Right (Func ctx' param body) -> do
       arg' <- evaluate ctx arg
       case arg' of
