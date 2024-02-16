@@ -10,10 +10,20 @@ data TypeValue
   | TString
   | TBool
   | TFunction TypeValue TypeValue
+  | TGeneric (TypeValue -> Either String TypeValue)
   | TType TypeValue
   | TUnion TypeValue TypeValue
   | TIntersection TypeValue TypeValue
-  deriving (Show)
+
+instance Show TypeValue where
+  show (TIntersection a b) = "TIntersection<" ++ show a ++ " + " ++ show b ++ ">"
+  show (TFunction a b) = "TFunction<" ++ show a ++ "><" ++ show b ++ ">"
+  show (TUnion a b) = "TUnion<" ++ show a ++ " + " ++ show b ++ ">"
+  show (TGeneric _) ="TGeneric"
+  show (TType a) = "TType<" ++ show a ++  ">"
+  show TInt = "TInt"
+  show TString = "TString"
+  show TBool = "TBool"
 
 instance Eq TypeValue where
   received == expected = case (received, expected) of
@@ -33,7 +43,12 @@ type Context = Map String TypeValue
 checker :: SExpr -> Either String TypeValue
 checker = typeCheck baseCtx
   where
-    baseCtx = fromList [("print", TFunction TString TString)]
+    baseCtx = fromList [
+      ("print", TFunction TString TString),
+      ("Int", TType TInt),
+      ("String", TType TString),
+      ("Bool", TType TBool)
+      ]
 
 typeCheck :: Context -> SExpr -> Either String TypeValue
 typeCheck ctx (SLetInfer name value next) = do
@@ -51,6 +66,9 @@ typeCheck ctx (STypeAlias name t next) = do
   t' <- typeCheck ctx t
   let ctx' = Map.insert name (TType t') ctx
   typeCheck ctx' next
+typeCheck ctx (SDefGeneric param body) = do
+  let body' arg = typeCheck (Map.insert param arg ctx) body
+  pure $ TGeneric body'
 typeCheck ctx (SDefInfer param paramT body) = do
   paramT' <- typeCheck ctx paramT
   let ctx' = Map.insert param paramT' ctx
@@ -73,6 +91,9 @@ typeCheck ctx (SConditional _ cthen celse) = do
 typeCheck ctx (SApp func param) = do
   funcT <- typeCheck ctx func
   case funcT of
+    TGeneric body -> do
+      paramT <- typeCheck ctx param
+      body paramT
     TFunction argT retT -> do
       paramT <- typeCheck ctx param
       if argT == paramT
