@@ -35,7 +35,7 @@ evaluate ctx (SLet name _ value next) = do
       evaluate ctx' next
     Left err -> pure $ Left err
 evaluate ctx (STypeAlias _ _ next) = evaluate ctx next
-evaluate ctx (SDefGeneric _ body) = do
+evaluate ctx (SDefInfer _ (SType "Type") body) = do
   body' <- evaluate ctx body
   case body' of
     Right body'' -> pure $ Right $ FuncGen body''

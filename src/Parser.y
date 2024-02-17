@@ -50,9 +50,6 @@ Expr         : let literal ':' LowTypeNote '=' Expr in Expr                  { S
              | TypeDef                                                       { $1 }
 
 TypeDef      : type literal '=' LowTypeNote in Expr                          { STypeAlias $2 $4 $6 }
-             | GenericDef                                                    { $1 }
-
-GenericDef   : '<' literal '>' FuncDef                                       { SDefGeneric $2 $4 }
              | FuncDef                                                       { $1 }
 
 FuncDef      : '(' literal ':' LowTypeNote ')' ':' LowTypeNote fatarrow Expr { SDef $2 $4 $7 $9 }
@@ -103,7 +100,6 @@ data SExpr
   = SLet String SExpr SExpr SExpr
   | SLetInfer String SExpr SExpr
   | STypeAlias String SExpr SExpr
-  | SDefGeneric String SExpr
   | SDef String SExpr SExpr SExpr
   | SDefInfer String SExpr SExpr
   | SConditional SExpr SExpr SExpr
