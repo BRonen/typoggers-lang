@@ -50,6 +50,13 @@ evaluate ctx (SConditional condition cthen celse) = do
     Right (Boolean False) -> evaluate ctx celse
     Right _ -> evaluate ctx cthen
     Left err -> pure $ Left err
+evaluate ctx (SApp (SName "print") arg) = do
+  arg' <- evaluate ctx arg
+  case arg' of
+    Right arg'' -> do
+      print arg''
+      pure $ Right arg''
+    Left err -> pure $ Left err
 evaluate ctx (SApp func arg) = do
   func' <- evaluate ctx func
   case func' of
