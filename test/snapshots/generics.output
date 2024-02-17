@@ -1,0 +1,11 @@
+tokens:
+
+[TokenLet,TokenLiteral "a",TokenEq,TokenOB,TokenLiteral "A",TokenColon,TokenLiteral "Type",TokenCB,TokenFatArrow,TokenOB,TokenLiteral "b",TokenColon,TokenLiteral "A",TokenCB,TokenFatArrow,TokenIf,TokenLiteral "b",TokenThen,TokenInt 1,TokenElse,TokenInt 2,TokenIn,TokenOB,TokenLiteral "a",TokenLT,TokenLiteral "Bool",TokenGT,TokenCB,TokenBool False]
+
+ast:
+
+SLetInfer "a" (SDefInfer "A" (SType "Type") (SDefInfer "b" (SType "A") (SConditional (SName "b") (SInt 1) (SInt 2)))) (SApp (SApp (SName "a") (SType "Bool")) (SBool False))
+
+type:
+
+TInt
