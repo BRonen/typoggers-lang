@@ -8,4 +8,4 @@ SLet "a" (SType "Bool") (SBool True) (SLet "b" (SType "Bool") (SBool False) (SLe
 
 type:
 
-TBool
+TUnion<TUnion<TBool + TBool> + TBool>

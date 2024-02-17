@@ -8,4 +8,4 @@ SLetInfer "a" (SDefInfer "A" (SType "Type") (SDefInfer "b" (SType "A") (SConditi
 
 type:
 
-TInt
+TUnion<TInt + TInt>
