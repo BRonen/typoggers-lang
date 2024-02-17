@@ -70,3 +70,8 @@ let a = if True then 0 else 3 in
 let b = if False then 0 else 5 in
 a + b
 ```
+
+```haskell
+let a = (A: Type) => (b: A) => if b then 1 else 2 in
+(a <Bool>) False
+```
