@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
 cd src && \
-happy Parser.y && \
+happy -g -a -c Parser.y && \
 cd ..
 
 stack run
