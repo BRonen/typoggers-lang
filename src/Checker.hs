@@ -10,10 +10,22 @@ data TypeValue
   | TString
   | TBool
   | TFunction TypeValue TypeValue
+  | TGeneric String (TypeValue -> Either String TypeValue)
+  | TTypeHole
   | TType TypeValue
   | TUnion TypeValue TypeValue
   | TIntersection TypeValue TypeValue
-  deriving (Show)
+
+instance Show TypeValue where
+  show (TIntersection a b) = "TIntersection<" ++ show a ++ " + " ++ show b ++ ">"
+  show (TFunction a b) = "TFunction<" ++ show a ++ "><" ++ show b ++ ">"
+  show (TUnion a b) = "TUnion<" ++ show a ++ " + " ++ show b ++ ">"
+  show (TGeneric a _) ="TGeneric<" ++ show a ++ ">"
+  show (TType a) = "TType<" ++ show a ++  ">"
+  show TInt = "TInt"
+  show TString = "TString"
+  show TBool = "TBool"
+  show TTypeHole = "TTypeHole"
 
 instance Eq TypeValue where
   received == expected = case (received, expected) of
@@ -26,6 +38,8 @@ instance Eq TypeValue where
     (TString, TString) -> True
     (TBool, TBool) -> True
     (TInt, TInt) -> True
+    (TType _, TTypeHole) -> True
+    (TTypeHole, TType _) -> True
     _ -> False
 
 type Context = Map String TypeValue
@@ -33,7 +47,9 @@ type Context = Map String TypeValue
 checker :: SExpr -> Either String TypeValue
 checker = typeCheck baseCtx
   where
-    baseCtx = fromList [("print", TFunction TString TString)]
+    baseCtx = fromList [
+      ("print", TFunction TString TString)
+      ]
 
 typeCheck :: Context -> SExpr -> Either String TypeValue
 typeCheck ctx (SLetInfer name value next) = do
@@ -51,6 +67,9 @@ typeCheck ctx (STypeAlias name t next) = do
   t' <- typeCheck ctx t
   let ctx' = Map.insert name (TType t') ctx
   typeCheck ctx' next
+typeCheck ctx (SDefInfer param (SType "Type") body) = do
+  let body' arg = typeCheck (Map.insert param arg ctx) body
+  pure $ TGeneric param body'
 typeCheck ctx (SDefInfer param paramT body) = do
   paramT' <- typeCheck ctx paramT
   let ctx' = Map.insert param paramT' ctx
@@ -73,6 +92,9 @@ typeCheck ctx (SConditional _ cthen celse) = do
 typeCheck ctx (SApp func param) = do
   funcT <- typeCheck ctx func
   case funcT of
+    TGeneric _ body -> do
+      paramT <- typeCheck ctx param
+      body $ TType paramT
     TFunction argT retT -> do
       paramT <- typeCheck ctx param
       if argT == paramT
@@ -134,10 +156,12 @@ typeCheck ctx (STypeof expr) = typeCheck ctx expr
 typeCheck _ (SType "Int") = Right TInt
 typeCheck _ (SType "String") = Right TString
 typeCheck _ (SType "Bool") = Right TBool
+typeCheck _ (SType "Type") = Right TTypeHole
 typeCheck ctx (SType t) = do
   case Map.lookup t ctx of
     Just (TType t') -> Right t'
-    Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
+    Just (TTypeHole) -> Right TTypeHole
+    Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as: " ++ show t'
     Nothing -> Left $ "Type not implemented: " ++ t
 typeCheck ctx (STypeFunc t r) = do
   t' <- typeCheck ctx t

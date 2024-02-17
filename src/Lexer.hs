@@ -33,6 +33,8 @@ data Token
   | TokenIf
   | TokenThen
   | TokenElse
+  | TokenLT
+  | TokenGT
   deriving (Show)
 
 lexer :: String -> [Token]
@@ -52,6 +54,8 @@ lexer ('|' : '|' : cs) = TokenOr : lexer cs
 lexer ('|' : cs) = TokenPipe : lexer cs
 lexer ('&' : '&' : cs) = TokenAnd : lexer cs
 lexer ('&' : cs) = TokenAmpersand : lexer cs
+lexer ('<' : cs) = TokenLT : lexer cs
+lexer ('>' : cs) = TokenGT : lexer cs
 lexer (c : cs)
   | isSpace c = lexer cs
   | isDigit c = lexNum (c : cs)
@@ -83,7 +87,7 @@ lexLiteral cs =
     _ -> TokenLiteral literal : lexer rest
   where
     (literal, rest) = span (\c -> not $ elem c specialCharacters) cs
-    specialCharacters = [':', ' ', '\n', '(', ')', '=', '*', '/', '-', '+', '"', '|', '&']
+    specialCharacters = [':', ' ', '\n', '(', ')', '=', '*', '/', '-', '+', '"', '|', '&', '>', '<']
 
 lexComment :: String -> [Token]
 lexComment cs = lexer rest

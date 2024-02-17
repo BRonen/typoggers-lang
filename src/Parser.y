@@ -40,6 +40,8 @@ import Lexer (Token (..))
       ':'             { TokenColon }
       '|'             { TokenPipe }
       '&'             { TokenAmpersand }
+      '<'             { TokenLT }
+      '>'             { TokenGT }
 
 %%
 
@@ -80,6 +82,7 @@ Factor       : '"' string '"'                                                { S
              | int                                                           { SInt $1 }
              | bool                                                          { SBool $1 }
              | '(' Expr ')'                                                  { SBrack $2 }
+             | '<' LowTypeNote '>'                                           { $2 }
 
 LowTypeNote  : HighTypeNote arrow LowTypeNote                                { STypeFunc $1 $3 }
              | HighTypeNote '|' LowTypeNote                                  { STypeUnion $1 $3 }

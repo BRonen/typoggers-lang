@@ -8,4 +8,4 @@ STypeAlias "Id" (STypeIntersection (STypeFunc (SType "String") (SType "String"))
 
 check err:
 
-"Var<id> of type <TIntersection (TFunction TString TString) (TIntersection (TFunction TInt TInt) (TFunction TBool TBool))> trying to be assigned with <TFunction (TUnion TString (TUnion TInt TBool)) (TUnion TString (TUnion TInt TBool))>"
+"Var<id> of type <TIntersection<TFunction<TString><TString> + TIntersection<TFunction<TInt><TInt> + TFunction<TBool><TBool>>>> trying to be assigned with <TFunction<TUnion<TString + TUnion<TInt + TBool>>><TUnion<TString + TUnion<TInt + TBool>>>>"

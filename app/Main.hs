@@ -7,7 +7,7 @@ import Parser (parse)
 
 main :: IO ()
 main = do
-  let tokens = lexer "type A = Int in let a: Bool & A | Bool = if False then 1 else False in a"
+  let tokens = lexer "let a = (A: Type) => (b: A) => if b then 1 else 2 in (a <Bool>) False"
   let ast = parse tokens
   case checker ast of
     Right resultT -> do
