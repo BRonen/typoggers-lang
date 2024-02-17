@@ -56,13 +56,13 @@ typeCheck ctx (SLetInfer name value next) = do
   value' <- typeCheck ctx value
   let ctx' = Map.insert name value' ctx
   typeCheck ctx' next
-typeCheck ctx (SLet name t value next) = do
-  t' <- typeCheck ctx t
-  value' <- typeCheck ctx value
-  let ctx' = Map.insert name value' ctx
-  if value' == t'
+typeCheck ctx (SLet name expectedT value next) = do
+  expectedT' <- typeCheck ctx expectedT
+  receivedT <- typeCheck ctx value
+  let ctx' = Map.insert name receivedT ctx
+  if receivedT == expectedT'
     then typeCheck ctx' next
-    else Left $ "Var<" ++ name ++ "> of type <" ++ show t' ++ "> trying to be assigned with <" ++ show value' ++ ">"
+    else Left $ "Var<" ++ name ++ "> of type <" ++ show expectedT' ++ "> trying to be assigned with <" ++ show receivedT ++ ">"
 typeCheck ctx (STypeAlias name t next) = do
   t' <- typeCheck ctx t
   let ctx' = Map.insert name (TType t') ctx
@@ -73,70 +73,64 @@ typeCheck ctx (SDefInfer param (SType "Type") body) = do
 typeCheck ctx (SDefInfer param paramT body) = do
   paramT' <- typeCheck ctx paramT
   let ctx' = Map.insert param paramT' ctx
-  bodyT <- typeCheck ctx' body
-  pure $ TFunction paramT' bodyT
+  receivedT <- typeCheck ctx' body
+  pure $ TFunction paramT' receivedT
 typeCheck ctx (SDef param paramT retT body) = do
   paramT' <- typeCheck ctx paramT
   retT' <- typeCheck ctx retT
   let ctx' = Map.insert param paramT' ctx
-  bodyT <- typeCheck ctx' body
-  if bodyT == retT'
+  receivedT <- typeCheck ctx' body
+  if receivedT == retT'
     then pure $ TFunction paramT' retT'
-    else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show bodyT ++ ">"
+    else Left $ "Function returning <" ++ show retT' ++ "> but body with type <" ++ show receivedT ++ ">"
 typeCheck ctx (SConditional _ cthen celse) = do
   cthenT <- typeCheck ctx cthen
   celseT <- typeCheck ctx celse
-  if cthenT == celseT
-    then pure cthenT
-    else pure $ TUnion cthenT celseT
-typeCheck ctx (SApp func param) = do
+  pure $ TUnion cthenT celseT
+typeCheck ctx (SApp func received) = do
   funcT <- typeCheck ctx func
   case funcT of
     TGeneric _ body -> do
-      paramT <- typeCheck ctx param
-      body $ TType paramT
-    TFunction argT retT -> do
-      paramT <- typeCheck ctx param
-      if argT == paramT
+      receivedT <- typeCheck ctx received
+      body $ TType receivedT
+    TFunction expectedT retT -> do
+      receivedT <- typeCheck ctx received
+      if receivedT == expectedT
         then pure retT
-        else Left $ "Trying to call Function<" ++ show func ++ "><" ++ show argT ++ "> with Param<" ++ show paramT ++ ">"
+        else Left $ "Trying to call Function<" ++ show func ++ "><" ++ show expectedT ++ "> with Param<" ++ show receivedT ++ ">"
     t -> Left $ "Applying invalid variable <" ++ show func ++ "> of type <" ++ show t ++ ">"
 typeCheck ctx (SPlus x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  case (x', y') of
-    (TInt, TInt) -> pure TInt
-    _ -> Left $ "Calling sum with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
+  if x' == TInt && y' == TInt 
+    then pure TInt
+    else Left $ "Calling sum with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
 typeCheck ctx (SMinus x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  case (x', y') of
-    (TInt, TInt) -> pure TInt
-    _ -> Left $ "Calling subtraction with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+  if x' == TInt && y' == TInt 
+    then pure TInt
+    else Left $ "Calling subtraction with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
 typeCheck ctx (SDiv x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  case (x', y') of
-    (TInt, TInt) -> pure TInt
-    _ -> Left $ "Calling division with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
+  if x' == TInt && y' == TInt 
+    then pure TInt
+    else Left $ "Calling division with invalid params: [ " ++ show x' ++ " - " ++ show y ++ " ]"
 typeCheck ctx (STimes x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  case (x', y') of
-    (TInt, TInt) -> pure TInt
-    _ -> Left $ "Calling multiplication with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
+  if x' == TInt && y' == TInt 
+    then pure TInt
+    else Left $ "Calling multiplication with invalid params: [ " ++ show x' ++ " - " ++ show y' ++ " ]"
 typeCheck ctx (SAnd x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  if x' == y'
-    then pure x'
-    else pure $ TUnion x' y'
+  pure $ TUnion x' y'
 typeCheck ctx (SOr x y) = do
   x' <- typeCheck ctx x
   y' <- typeCheck ctx y
-  if x' == y'
-    then pure x'
-    else pure $ TUnion x' y'
+  pure $ TUnion x' y'
 typeCheck ctx (SBrack expr) = typeCheck ctx expr
 typeCheck ctx (SName name) = case Map.lookup name ctx of
   Just t -> Right t
