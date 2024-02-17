@@ -48,9 +48,7 @@ checker :: SExpr -> Either String TypeValue
 checker = typeCheck baseCtx
   where
     baseCtx = fromList [
-      ("print", TFunction TString TString),
-      ("Int", TType TInt),
-      ("String", TType TString)
+      ("print", TFunction TString TString)
       ]
 
 typeCheck :: Context -> SExpr -> Either String TypeValue
@@ -96,7 +94,7 @@ typeCheck ctx (SApp func param) = do
   case funcT of
     TGeneric _ body -> do
       paramT <- typeCheck ctx param
-      body paramT
+      body $ TType paramT
     TFunction argT retT -> do
       paramT <- typeCheck ctx param
       if argT == paramT
@@ -163,7 +161,7 @@ typeCheck ctx (SType t) = do
   case Map.lookup t ctx of
     Just (TType t') -> Right t'
     Just (TTypeHole) -> Right TTypeHole
-    Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as:" ++ show t'
+    Just t' -> Left $ "Trying to type with a value <" ++ t ++ "> as: " ++ show t'
     Nothing -> Left $ "Type not implemented: " ++ t
 typeCheck ctx (STypeFunc t r) = do
   t' <- typeCheck ctx t
