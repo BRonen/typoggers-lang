@@ -1,6 +1,7 @@
 {
 module Parser
   ( parse,
+    E (..),
     Token (..),
     SExpr (..),
   )
@@ -12,6 +13,7 @@ import Lexer (Token (..))
 %name parse
 %tokentype  { Token }
 %error      { parseError }
+%monad { E } { thenE } { returnE }
 
 %token
       let             { TokenLet }
@@ -94,8 +96,19 @@ HighTypeNote : literal                                                       { S
              | '(' LowTypeNote ')'                                           { $2 }
 
 {
-parseError :: [Token] -> a
-parseError tokens = error $ "Parse error: " ++ show tokens
+data E a = Ok a | Failed String
+  deriving (Show)
+parseError :: [Token] -> E a
+parseError tokens = Failed $ "Failed parsing next tokens: " ++ show tokens
+
+thenE :: E a -> (a -> E b) -> E b
+m `thenE` k =
+   case m of
+       Ok a     -> k a
+       Failed e -> Failed e
+
+returnE :: a -> E a
+returnE a = Ok a
 
 data SExpr
   = SLet String SExpr SExpr SExpr
