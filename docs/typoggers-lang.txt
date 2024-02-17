@@ -35,11 +35,16 @@ TokenAmpersand :: Token
 TokenIf :: Token
 TokenThen :: Token
 TokenElse :: Token
+TokenLT :: Token
+TokenGT :: Token
 lexer :: String -> [Token]
 instance GHC.Show.Show Lexer.Token
 
 module Parser
-parse :: [Token] -> SExpr
+parse :: [Token] -> E SExpr
+data E a
+Ok :: a -> E a
+Failed :: String -> E a
 data Token
 TokenLet :: Token
 TokenType :: Token
@@ -67,6 +72,8 @@ TokenAmpersand :: Token
 TokenIf :: Token
 TokenThen :: Token
 TokenElse :: Token
+TokenLT :: Token
+TokenGT :: Token
 data SExpr
 SLet :: String -> SExpr -> SExpr -> SExpr -> SExpr
 SLetInfer :: String -> SExpr -> SExpr -> SExpr
@@ -91,10 +98,8 @@ STypeof :: SExpr -> SExpr
 STypeUnion :: SExpr -> SExpr -> SExpr
 STypeIntersection :: SExpr -> SExpr -> SExpr
 STypeFunc :: SExpr -> SExpr -> SExpr
+instance GHC.Show.Show a => GHC.Show.Show (Parser.E a)
 instance GHC.Show.Show Parser.SExpr
-instance GHC.Base.Functor Parser.HappyIdentity
-instance GHC.Base.Applicative Parser.HappyIdentity
-instance GHC.Base.Monad Parser.HappyIdentity
 
 module Checker
 data TypeValue

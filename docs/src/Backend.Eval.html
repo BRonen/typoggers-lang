@@ -1,17 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Backend.Eval</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#eval"><span class="hs-identifier">eval</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Map</span></span><span>
-</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parser.html"><span class="hs-identifier">Parser</span></a></span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-5"></span><span>    </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier">SExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parser.html"><span class="hs-identifier">Parser</span></a></span><span>
+</span><span id="line-5"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier">SExpr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="hs-special">)</span><span>
 </span><span id="line-7"></span><span>
 </span><span id="line-8"></span><span class="hs-keyword">data</span><span> </span><span id="Value"><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-var">Value</span></a></span></span><span>
-</span><span id="line-9"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="Int"><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
-</span><span id="line-10"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Str"><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-var">Str</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-11"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Boolean"><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-var">Boolean</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
-</span><span id="line-12"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Var"><span class="annot"><a href="Backend.Eval.html#Var"><span class="hs-identifier hs-var">Var</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-13"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Func"><span class="annot"><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span>
-</span><span id="line-14"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679054719"><span id="local-6989586621679054737"><span id="local-6989586621679054740"><span class="annot"><span class="annottext">Int -&gt; Value -&gt; ShowS
+</span><span id="line-9"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Int"><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Str"><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-var">Str</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-11"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Boolean"><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-var">Boolean</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Var"><span class="annot"><a href="Backend.Eval.html#Var"><span class="hs-identifier hs-var">Var</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Func"><span class="annot"><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="FuncGen"><span class="annot"><a href="Backend.Eval.html#FuncGen"><span class="hs-identifier hs-var">FuncGen</span></a></span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679054885"><span id="local-6989586621679054905"><span id="local-6989586621679054908"><span class="annot"><span class="annottext">Int -&gt; Value -&gt; ShowS
 [Value] -&gt; ShowS
 Value -&gt; String
 (Int -&gt; Value -&gt; ShowS)
@@ -25,45 +26,45 @@ show :: Value -&gt; String
 $cshowList :: [Value] -&gt; ShowS
 showList :: [Value] -&gt; ShowS
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-15"></span><span>
-</span><span id="line-16"></span><span class="hs-keyword">type</span><span> </span><span id="Context"><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-var">Context</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span>
-</span><span id="line-17"></span><span>
-</span><span id="line-18"></span><span class="annot"><a href="Backend.Eval.html#eval"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span id="eval"><span class="annot"><span class="annottext">eval :: SExpr -&gt; IO (Either String Value)
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">type</span><span> </span><span id="Context"><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-var">Context</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="annot"><a href="Backend.Eval.html#eval"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span id="eval"><span class="annot"><span class="annottext">eval :: SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#eval"><span class="hs-identifier hs-var hs-var">eval</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
 forall k a. Map k a
 </span><span class="hs-identifier hs-var">Map.empty</span></span><span>
-</span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-type">evaluate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span id="evaluate"><span class="annot"><span class="annottext">evaluate :: Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var hs-var">evaluate</span></a></span></span><span> </span><span id="local-6989586621679054745"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054745"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SLetInfer"><span class="hs-identifier hs-type">SLetInfer</span></a></span><span> </span><span id="local-6989586621679054747"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054747"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679054748"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054748"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679054749"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054749"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-23"></span><span>    </span><span id="local-6989586621679054750"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054750"><span class="hs-identifier hs-var">value'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-type">evaluate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Backend.Eval.html#Context"><span class="hs-identifier hs-type">Context</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Parser.html#SExpr"><span class="hs-identifier hs-type">SExpr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="Backend.Eval.html#Value"><span class="hs-identifier hs-type">Value</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span id="evaluate"><span class="annot"><span class="annottext">evaluate :: Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var hs-var">evaluate</span></a></span></span><span> </span><span id="local-6989586621679054913"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054913"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SLetInfer"><span class="hs-identifier hs-type">SLetInfer</span></a></span><span> </span><span id="local-6989586621679054915"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054915"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679054916"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054916"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679054917"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054917"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621679054918"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054918"><span class="hs-identifier hs-var">value'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054745"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054748"><span class="hs-identifier hs-var">value</span></a></span><span>
-</span><span id="line-24"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054750"><span class="hs-identifier hs-var">value'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-25"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054751"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054751"><span class="hs-identifier hs-var">value''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-26"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679054754"><span class="annot"><span class="annottext">ctx' :: Context
-</span><a href="#local-6989586621679054754"><span class="hs-identifier hs-var hs-var">ctx'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
+</span><a href="#local-6989586621679054913"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054916"><span class="hs-identifier hs-var">value</span></a></span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054918"><span class="hs-identifier hs-var">value'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-26"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054919"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054919"><span class="hs-identifier hs-var">value''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-27"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679054922"><span class="annot"><span class="annottext">ctx' :: Context
+</span><a href="#local-6989586621679054922"><span class="hs-identifier hs-var hs-var">ctx'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
 forall k a. Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.insert</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054747"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054751"><span class="hs-identifier hs-var">value''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054745"><span class="hs-identifier hs-var">ctx</span></a></span><span>
-</span><span id="line-27"></span><span>            </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054915"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054919"><span class="hs-identifier hs-var">value''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054913"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-28"></span><span>      </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054754"><span class="hs-identifier hs-var">ctx'</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054749"><span class="hs-identifier hs-var">next</span></a></span><span>
-</span><span id="line-28"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054756"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054756"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054922"><span class="hs-identifier hs-var">ctx'</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054917"><span class="hs-identifier hs-var">next</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054924"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054924"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -72,35 +73,35 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054756"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-29"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054757"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054757"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SLet"><span class="hs-identifier hs-type">SLet</span></a></span><span> </span><span id="local-6989586621679054759"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054759"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054760"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054760"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679054761"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054761"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-30"></span><span>    </span><span id="local-6989586621679054762"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054762"><span class="hs-identifier hs-var">value'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054924"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054925"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054925"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SLet"><span class="hs-identifier hs-type">SLet</span></a></span><span> </span><span id="local-6989586621679054927"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054927"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054928"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054928"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span id="local-6989586621679054929"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054929"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-31"></span><span>  </span><span id="local-6989586621679054930"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054930"><span class="hs-identifier hs-var">value'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054757"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054760"><span class="hs-identifier hs-var">value</span></a></span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054762"><span class="hs-identifier hs-var">value'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-32"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054763"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054763"><span class="hs-identifier hs-var">value''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-33"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679054766"><span class="annot"><span class="annottext">ctx' :: Context
-</span><a href="#local-6989586621679054766"><span class="hs-identifier hs-var hs-var">ctx'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
+</span><a href="#local-6989586621679054925"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054928"><span class="hs-identifier hs-var">value</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054930"><span class="hs-identifier hs-var">value'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054931"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054931"><span class="hs-identifier hs-var">value''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-34"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679054934"><span class="annot"><span class="annottext">ctx' :: Context
+</span><a href="#local-6989586621679054934"><span class="hs-identifier hs-var hs-var">ctx'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
 forall k a. Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.insert</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054759"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054763"><span class="hs-identifier hs-var">value''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054757"><span class="hs-identifier hs-var">ctx</span></a></span><span>
-</span><span id="line-34"></span><span>            </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054927"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054931"><span class="hs-identifier hs-var">value''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054925"><span class="hs-identifier hs-var">ctx</span></a></span><span>
+</span><span id="line-35"></span><span>      </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054766"><span class="hs-identifier hs-var">ctx'</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054761"><span class="hs-identifier hs-var">next</span></a></span><span>
-</span><span id="line-35"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054767"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054767"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054934"><span class="hs-identifier hs-var">ctx'</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054929"><span class="hs-identifier hs-var">next</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054935"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054935"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -109,22 +110,29 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054767"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054768"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054768"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#STypeAlias"><span class="hs-identifier hs-type">STypeAlias</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054935"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-37"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054936"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054936"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#STypeAlias"><span class="hs-identifier hs-type">STypeAlias</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054770"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054770"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054938"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054938"><span class="hs-identifier hs-var">next</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054768"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054770"><span class="hs-identifier hs-var">next</span></a></span><span>
-</span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054771"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054771"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDefInfer"><span class="hs-identifier hs-type">SDefInfer</span></a></span><span> </span><span id="local-6989586621679054773"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054773"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054774"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054774"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054936"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054938"><span class="hs-identifier hs-var">next</span></a></span><span>
+</span><span id="line-38"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054939"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054939"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDefInfer"><span class="hs-identifier hs-type">SDefInfer</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SType"><span class="hs-identifier hs-type">SType</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Type&quot;</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679054942"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054942"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679054943"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054943"><span class="hs-identifier hs-var">body'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054939"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054942"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054943"><span class="hs-identifier hs-var">body'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054944"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054944"><span class="hs-identifier hs-var">body''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -134,125 +142,157 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Either String Value) -&gt; Value -&gt; Either String Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; String -&gt; SExpr -&gt; Value
-</span><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054771"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054773"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054774"><span class="hs-identifier hs-var">body</span></a></span><span>
-</span><span id="line-40"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054775"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054775"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDef"><span class="hs-identifier hs-type">SDef</span></a></span><span> </span><span id="local-6989586621679054777"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054777"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054778"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054778"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
-forall a. a -&gt; IO a
-forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
-</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
--&gt; Either String Value -&gt; IO (Either String Value)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Either String Value
-forall a b. b -&gt; Either a b
-</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Either String Value) -&gt; Value -&gt; Either String Value
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; String -&gt; SExpr -&gt; Value
-</span><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054775"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054777"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054778"><span class="hs-identifier hs-var">body</span></a></span><span>
-</span><span id="line-41"></span><span>
-</span><span id="line-42"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054779"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SConditional"><span class="hs-identifier hs-type">SConditional</span></a></span><span> </span><span id="local-6989586621679054781"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054781"><span class="hs-identifier hs-var">condition</span></a></span></span><span> </span><span id="local-6989586621679054782"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054782"><span class="hs-identifier hs-var">cthen</span></a></span></span><span> </span><span id="local-6989586621679054783"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054783"><span class="hs-identifier hs-var">celse</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-43"></span><span>    </span><span id="local-6989586621679054784"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054784"><span class="hs-identifier hs-var">conditional</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054781"><span class="hs-identifier hs-var">condition</span></a></span><span>
-</span><span id="line-44"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054784"><span class="hs-identifier hs-var">conditional</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-45"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054783"><span class="hs-identifier hs-var">celse</span></a></span><span>
-</span><span id="line-46"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054783"><span class="hs-identifier hs-var">celse</span></a></span><span>
-</span><span id="line-47"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054783"><span class="hs-identifier hs-var">celse</span></a></span><span>
-</span><span id="line-48"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054779"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054782"><span class="hs-identifier hs-var">cthen</span></a></span><span>
-</span><span id="line-49"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054785"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054785"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
-forall a. a -&gt; IO a
-forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
-</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
--&gt; Either String Value -&gt; IO (Either String Value)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054785"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054786"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054786"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SApp"><span class="hs-identifier hs-type">SApp</span></a></span><span> </span><span id="local-6989586621679054788"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054788"><span class="hs-identifier hs-var">func</span></a></span></span><span> </span><span id="local-6989586621679054789"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054789"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-52"></span><span>    </span><span id="local-6989586621679054790"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054790"><span class="hs-identifier hs-var">func'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054786"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054788"><span class="hs-identifier hs-var">func</span></a></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054790"><span class="hs-identifier hs-var">func'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-54"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-type">Func</span></a></span><span> </span><span id="local-6989586621679054791"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054791"><span class="hs-identifier hs-var">ctx'</span></a></span></span><span> </span><span id="local-6989586621679054792"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054792"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span id="local-6989586621679054793"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054793"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-55"></span><span>            </span><span id="local-6989586621679054794"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054794"><span class="hs-identifier hs-var">arg'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054786"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054789"><span class="hs-identifier hs-var">arg</span></a></span><span>
-</span><span id="line-56"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054794"><span class="hs-identifier hs-var">arg'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-57"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054795"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054795"><span class="hs-identifier hs-var">arg''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
-</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
-forall k a. Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a
-</span><span class="hs-identifier hs-var">Map.insert</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054792"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054795"><span class="hs-identifier hs-var">arg''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054791"><span class="hs-identifier hs-var">ctx'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054793"><span class="hs-identifier hs-var">body</span></a></span><span>
-</span><span id="line-58"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054796"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054796"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
-forall a. a -&gt; IO a
-forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
-</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
--&gt; Either String Value -&gt; IO (Either String Value)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
-forall a b. a -&gt; Either a b
-</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054796"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-59"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Value
+</span><a href="Backend.Eval.html#FuncGen"><span class="hs-identifier hs-var">FuncGen</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054944"><span class="hs-identifier hs-var">body''</span></a></span><span>
+</span><span id="line-42"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054790"><span class="hs-identifier hs-var">func'</span></a></span><span>
-</span><span id="line-60"></span><span>        </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054943"><span class="hs-identifier hs-var">body'</span></a></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054945"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054945"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDefInfer"><span class="hs-identifier hs-type">SDefInfer</span></a></span><span> </span><span id="local-6989586621679054946"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054946"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054947"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054947"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
+-&gt; Either String Value -&gt; IO (Either String Value)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Either String Value
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Either String Value) -&gt; Value -&gt; Either String Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; String -&gt; SExpr -&gt; Value
+</span><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054945"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054946"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054947"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054948"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054948"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDef"><span class="hs-identifier hs-type">SDef</span></a></span><span> </span><span id="local-6989586621679054950"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054950"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054951"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054951"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
+-&gt; Either String Value -&gt; IO (Either String Value)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Either String Value
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Either String Value) -&gt; Value -&gt; Either String Value
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Context -&gt; String -&gt; SExpr -&gt; Value
+</span><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-var">Func</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054948"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054950"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054951"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><span id="line-45"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054952"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SConditional"><span class="hs-identifier hs-type">SConditional</span></a></span><span> </span><span id="local-6989586621679054954"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054954"><span class="hs-identifier hs-var">condition</span></a></span></span><span> </span><span id="local-6989586621679054955"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054955"><span class="hs-identifier hs-var">cthen</span></a></span></span><span> </span><span id="local-6989586621679054956"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054956"><span class="hs-identifier hs-var">celse</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679054957"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054957"><span class="hs-identifier hs-var">conditional</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054954"><span class="hs-identifier hs-var">condition</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054957"><span class="hs-identifier hs-var">conditional</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-48"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054956"><span class="hs-identifier hs-var">celse</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054956"><span class="hs-identifier hs-var">celse</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054956"><span class="hs-identifier hs-var">celse</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054952"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054955"><span class="hs-identifier hs-var">cthen</span></a></span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054958"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054958"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
+-&gt; Either String Value -&gt; IO (Either String Value)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054958"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054959"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054959"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SApp"><span class="hs-identifier hs-type">SApp</span></a></span><span> </span><span id="local-6989586621679054961"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054961"><span class="hs-identifier hs-var">func</span></a></span></span><span> </span><span id="local-6989586621679054962"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054962"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-54"></span><span>  </span><span id="local-6989586621679054963"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054963"><span class="hs-identifier hs-var">func'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054959"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054961"><span class="hs-identifier hs-var">func</span></a></span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054963"><span class="hs-identifier hs-var">func'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-56"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#FuncGen"><span class="hs-identifier hs-type">FuncGen</span></a></span><span> </span><span id="local-6989586621679054964"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054964"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
+-&gt; Either String Value -&gt; IO (Either String Value)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Either String Value
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054964"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Func"><span class="hs-identifier hs-type">Func</span></a></span><span> </span><span id="local-6989586621679054965"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054965"><span class="hs-identifier hs-var">ctx'</span></a></span></span><span> </span><span id="local-6989586621679054966"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054966"><span class="hs-identifier hs-var">param</span></a></span></span><span> </span><span id="local-6989586621679054967"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054967"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-58"></span><span>      </span><span id="local-6989586621679054968"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054968"><span class="hs-identifier hs-var">arg'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054959"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054962"><span class="hs-identifier hs-var">arg</span></a></span><span>
+</span><span id="line-59"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054968"><span class="hs-identifier hs-var">arg'</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-60"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679054969"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054969"><span class="hs-identifier hs-var">arg''</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Value -&gt; Context -&gt; Context
+forall k a. Ord k =&gt; k -&gt; a -&gt; Map k a -&gt; Map k a
+</span><span class="hs-identifier hs-var">Map.insert</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054966"><span class="hs-identifier hs-var">param</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679054969"><span class="hs-identifier hs-var">arg''</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054965"><span class="hs-identifier hs-var">ctx'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054967"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><span id="line-61"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054970"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054970"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
+-&gt; Either String Value -&gt; IO (Either String Value)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679054970"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+forall a. a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054963"><span class="hs-identifier hs-var">func'</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="annot"><span class="annottext">Either String Value
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -269,28 +309,27 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SExpr -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054788"><span class="hs-identifier hs-var">func</span></a></span><span>
-</span><span id="line-61"></span><span>
-</span><span id="line-62"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054798"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054798"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SPlus"><span class="hs-identifier hs-type">SPlus</span></a></span><span> </span><span id="local-6989586621679054800"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054800"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054801"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054801"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-63"></span><span>    </span><span id="local-6989586621679054802"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054802"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054961"><span class="hs-identifier hs-var">func</span></a></span><span>
+</span><span id="line-64"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054972"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054972"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SPlus"><span class="hs-identifier hs-type">SPlus</span></a></span><span> </span><span id="local-6989586621679054974"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054974"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054975"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054975"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679054976"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054976"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054798"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054800"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-64"></span><span>    </span><span id="local-6989586621679054803"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054803"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054972"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054974"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679054977"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054977"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054798"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054801"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-65"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054802"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054803"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-66"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054804"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054804"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054805"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054805"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054972"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054975"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054976"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054977"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054978"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054978"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054979"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054979"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -304,11 +343,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; Integer -&gt; Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054804"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679054978"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054805"><span class="hs-identifier hs-var">v'</span></a></span><span>
-</span><span id="line-67"></span><span>        </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
+</span><a href="#local-6989586621679054979"><span class="hs-identifier hs-var">v'</span></a></span><span>
+</span><span id="line-69"></span><span>    </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -325,7 +364,7 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054802"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054976"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; - &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
@@ -333,30 +372,30 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SExpr -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054801"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054975"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; ]&quot;</span></span><span>
-</span><span id="line-68"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054807"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054807"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SMinus"><span class="hs-identifier hs-type">SMinus</span></a></span><span> </span><span id="local-6989586621679054809"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054809"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054810"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054810"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679054811"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054811"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span id="line-70"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054981"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054981"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SMinus"><span class="hs-identifier hs-type">SMinus</span></a></span><span> </span><span id="local-6989586621679054983"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054983"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054984"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054984"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-71"></span><span>  </span><span id="local-6989586621679054985"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054985"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054807"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054809"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-70"></span><span>    </span><span id="local-6989586621679054812"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054812"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054981"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054983"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679054986"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054986"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054807"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054810"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-71"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054811"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054812"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-72"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054813"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054813"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054814"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054814"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054981"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054984"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054985"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054986"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054987"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054987"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054988"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054988"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -370,11 +409,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; Integer -&gt; Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054813"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679054987"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054814"><span class="hs-identifier hs-var">v'</span></a></span><span>
-</span><span id="line-73"></span><span>        </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
+</span><a href="#local-6989586621679054988"><span class="hs-identifier hs-var">v'</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -391,7 +430,7 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054811"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054985"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; - &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
@@ -399,31 +438,30 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054812"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054986"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; ]&quot;</span></span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054815"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054815"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDiv"><span class="hs-identifier hs-type">SDiv</span></a></span><span> </span><span id="local-6989586621679054817"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054817"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054818"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054818"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-76"></span><span>    </span><span id="local-6989586621679054819"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054819"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span id="line-76"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054989"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054989"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SDiv"><span class="hs-identifier hs-type">SDiv</span></a></span><span> </span><span id="local-6989586621679054991"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054991"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054992"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054992"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-77"></span><span>  </span><span id="local-6989586621679054993"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054993"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054815"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054817"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-77"></span><span>    </span><span id="local-6989586621679054820"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054820"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054989"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054991"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679054994"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054994"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054815"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054818"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-78"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054819"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054820"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-79"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054821"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054821"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054822"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054822"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054989"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679054992"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054993"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679054994"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-80"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054995"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054995"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054996"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679054996"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -437,11 +475,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; Integer -&gt; Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054821"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679054995"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054822"><span class="hs-identifier hs-var">v'</span></a></span><span>
-</span><span id="line-80"></span><span>        </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
+</span><a href="#local-6989586621679054996"><span class="hs-identifier hs-var">v'</span></a></span><span>
+</span><span id="line-81"></span><span>    </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -458,7 +496,7 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054819"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054993"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; - &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
@@ -466,30 +504,30 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SExpr -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054818"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679054992"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; ]&quot;</span></span><span>
-</span><span id="line-81"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054824"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054824"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#STimes"><span class="hs-identifier hs-type">STimes</span></a></span><span> </span><span id="local-6989586621679054826"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054826"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054827"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054827"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679054828"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054828"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span id="line-82"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054998"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679054998"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#STimes"><span class="hs-identifier hs-type">STimes</span></a></span><span> </span><span id="local-6989586621679055000"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055000"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679055001"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055001"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-83"></span><span>  </span><span id="local-6989586621679055002"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055002"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054824"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054826"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-83"></span><span>    </span><span id="local-6989586621679054829"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054829"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054998"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055000"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-84"></span><span>  </span><span id="local-6989586621679055003"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055003"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054824"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054827"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-84"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054828"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054829"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-85"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054830"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054830"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679054831"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054831"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679054998"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055001"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055002"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055003"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679055004"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679055004"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span id="local-6989586621679055005"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679055005"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -503,11 +541,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; Integer -&gt; Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054830"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621679055004"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054831"><span class="hs-identifier hs-var">v'</span></a></span><span>
-</span><span id="line-86"></span><span>        </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
+</span><a href="#local-6989586621679055005"><span class="hs-identifier hs-var">v'</span></a></span><span>
+</span><span id="line-87"></span><span>    </span><span class="annot"><span class="annottext">(Either String Value, Either String Value)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -524,7 +562,7 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054828"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679055002"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; - &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
@@ -532,58 +570,57 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054829"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679055003"><span class="hs-identifier hs-var">y'</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; ]&quot;</span></span><span>
-</span><span id="line-87"></span><span>
-</span><span id="line-88"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054833"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054833"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SAnd"><span class="hs-identifier hs-type">SAnd</span></a></span><span> </span><span id="local-6989586621679054835"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054835"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054836"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054836"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-89"></span><span>    </span><span id="local-6989586621679054837"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054837"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><span id="line-88"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679055007"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679055007"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SAnd"><span class="hs-identifier hs-type">SAnd</span></a></span><span> </span><span id="local-6989586621679055009"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055009"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679055010"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055010"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-89"></span><span>  </span><span id="local-6989586621679055011"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055011"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054833"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054835"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-90"></span><span>    </span><span id="local-6989586621679054838"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054838"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055007"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055009"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-90"></span><span>  </span><span id="local-6989586621679055012"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055012"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054833"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054836"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-91"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054837"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054838"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-92"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679055007"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055010"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055011"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055012"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054837"><span class="hs-identifier hs-var">x'</span></a></span><span>
-</span><span id="line-93"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055011"><span class="hs-identifier hs-var">x'</span></a></span><span>
+</span><span id="line-93"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054837"><span class="hs-identifier hs-var">x'</span></a></span><span>
-</span><span id="line-94"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679055011"><span class="hs-identifier hs-var">x'</span></a></span><span>
+</span><span id="line-94"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054837"><span class="hs-identifier hs-var">x'</span></a></span><span>
-</span><span id="line-95"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679055011"><span class="hs-identifier hs-var">x'</span></a></span><span>
+</span><span id="line-95"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054838"><span class="hs-identifier hs-var">y'</span></a></span><span>
-</span><span id="line-96"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054839"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054839"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055012"><span class="hs-identifier hs-var">y'</span></a></span><span>
+</span><span id="line-96"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679055013"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055013"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -593,10 +630,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054839"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-97"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054840"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054840"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055013"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679055014"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055014"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -605,55 +642,54 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054840"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-98"></span><span>
-</span><span id="line-99"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054841"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054841"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SOr"><span class="hs-identifier hs-type">SOr</span></a></span><span> </span><span id="local-6989586621679054843"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054843"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679054844"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054844"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-100"></span><span>    </span><span id="local-6989586621679054845"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054845"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055014"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-98"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679055015"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679055015"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SOr"><span class="hs-identifier hs-type">SOr</span></a></span><span> </span><span id="local-6989586621679055017"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055017"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679055018"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055018"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-99"></span><span>  </span><span id="local-6989586621679055019"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055019"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054841"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054843"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-101"></span><span>    </span><span id="local-6989586621679054846"><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054846"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055015"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055017"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-100"></span><span>  </span><span id="local-6989586621679055020"><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055020"><span class="hs-identifier hs-var">y'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054841"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054844"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-102"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054845"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054846"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-103"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679055015"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055018"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055019"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055020"><span class="hs-identifier hs-var">y'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-102"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054846"><span class="hs-identifier hs-var">y'</span></a></span><span>
-</span><span id="line-104"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055020"><span class="hs-identifier hs-var">y'</span></a></span><span>
+</span><span id="line-103"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-type">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054846"><span class="hs-identifier hs-var">y'</span></a></span><span>
-</span><span id="line-105"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679055020"><span class="hs-identifier hs-var">y'</span></a></span><span>
+</span><span id="line-104"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-type">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054846"><span class="hs-identifier hs-var">y'</span></a></span><span>
-</span><span id="line-106"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679055020"><span class="hs-identifier hs-var">y'</span></a></span><span>
+</span><span id="line-105"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Either String Value
-</span><a href="#local-6989586621679054845"><span class="hs-identifier hs-var">x'</span></a></span><span>
-</span><span id="line-107"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054847"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054847"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
+</span><a href="#local-6989586621679055019"><span class="hs-identifier hs-var">x'</span></a></span><span>
+</span><span id="line-106"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679055021"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055021"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either String Value
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -663,10 +699,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054847"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-108"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679054848"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054848"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055021"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-107"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either String Value
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679055022"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055022"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -675,23 +711,22 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Either String Value
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054848"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-109"></span><span>
-</span><span id="line-110"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054849"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054849"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SBrack"><span class="hs-identifier hs-type">SBrack</span></a></span><span> </span><span id="local-6989586621679054851"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054851"><span class="hs-identifier hs-var">expr</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055022"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-108"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679055023"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679055023"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SBrack"><span class="hs-identifier hs-type">SBrack</span></a></span><span> </span><span id="local-6989586621679055025"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055025"><span class="hs-identifier hs-var">expr</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Context -&gt; SExpr -&gt; IO (Either String Value)
 </span><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054849"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054851"><span class="hs-identifier hs-var">expr</span></a></span><span>
-</span><span id="line-111"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679054852"><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054852"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SName"><span class="hs-identifier hs-type">SName</span></a></span><span> </span><span id="local-6989586621679054854"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054854"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Context -&gt; Maybe Value
+</span><a href="#local-6989586621679055023"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055025"><span class="hs-identifier hs-var">expr</span></a></span><span>
+</span><span id="line-109"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span id="local-6989586621679055026"><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679055026"><span class="hs-identifier hs-var">ctx</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SName"><span class="hs-identifier hs-type">SName</span></a></span><span> </span><span id="local-6989586621679055028"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055028"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; Context -&gt; Maybe Value
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Map.lookup</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054854"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><a href="#local-6989586621679054852"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-112"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679054856"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054856"><span class="hs-identifier hs-var">expr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055028"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><a href="#local-6989586621679055026"><span class="hs-identifier hs-var">ctx</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-110"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679055030"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679055030"><span class="hs-identifier hs-var">expr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -700,8 +735,8 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Either String Value
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679054856"><span class="hs-identifier hs-var">expr</span></a></span><span>
-</span><span id="line-113"></span><span>    </span><span class="annot"><span class="annottext">Maybe Value
+</span><a href="#local-6989586621679055030"><span class="hs-identifier hs-var">expr</span></a></span><span>
+</span><span id="line-111"></span><span>  </span><span class="annot"><span class="annottext">Maybe Value
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -716,10 +751,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-string">&quot;Variable not initialized: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054854"><span class="hs-identifier hs-var">name</span></a></span><span>
-</span><span id="line-114"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SInt"><span class="hs-identifier hs-type">SInt</span></a></span><span> </span><span id="local-6989586621679054858"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054858"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055028"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><span id="line-112"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SInt"><span class="hs-identifier hs-type">SInt</span></a></span><span> </span><span id="local-6989586621679055032"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679055032"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -731,10 +766,10 @@ forall a b. b -&gt; Either a b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Value
 </span><a href="Backend.Eval.html#Int"><span class="hs-identifier hs-var">Int</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679054858"><span class="hs-identifier hs-var">v</span></a></span><span>
-</span><span id="line-115"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SBool"><span class="hs-identifier hs-type">SBool</span></a></span><span> </span><span id="local-6989586621679054860"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679054860"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055032"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-113"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SBool"><span class="hs-identifier hs-type">SBool</span></a></span><span> </span><span id="local-6989586621679055034"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679055034"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -746,10 +781,10 @@ forall a b. b -&gt; Either a b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Value
 </span><a href="Backend.Eval.html#Boolean"><span class="hs-identifier hs-var">Boolean</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679054860"><span class="hs-identifier hs-var">v</span></a></span><span>
-</span><span id="line-116"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SString"><span class="hs-identifier hs-type">SString</span></a></span><span> </span><span id="local-6989586621679054862"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054862"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055034"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-114"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Parser.html#SString"><span class="hs-identifier hs-type">SString</span></a></span><span> </span><span id="local-6989586621679055036"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679055036"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -761,12 +796,11 @@ forall a b. b -&gt; Either a b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Value
 </span><a href="Backend.Eval.html#Str"><span class="hs-identifier hs-var">Str</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679054862"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span>
-</span><span id="line-117"></span><span>
-</span><span id="line-118"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679054863"><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054863"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-119"></span><span>    </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
+</span><a href="#local-6989586621679055036"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-115"></span><span class="annot"><a href="Backend.Eval.html#evaluate"><span class="hs-identifier hs-var">evaluate</span></a></span><span> </span><span class="annot"><span class="annottext">Context
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679055037"><span class="annot"><span class="annottext">SExpr
+</span><a href="#local-6989586621679055037"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-116"></span><span>  </span><span class="annot"><span class="annottext">Either String Value -&gt; IO (Either String Value)
 forall a. a -&gt; IO a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Either String Value -&gt; IO (Either String Value))
@@ -782,5 +816,5 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">SExpr -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SExpr
-</span><a href="#local-6989586621679054863"><span class="hs-identifier hs-var">s</span></a></span><span>
-</span><span id="line-120"></span></pre></body></html>
+</span><a href="#local-6989586621679055037"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-117"></span></pre></body></html>
